@@ -1,0 +1,25 @@
+name: iOS simulator (manual, public standard runner)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recetario-ios-simulator
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Compile and test simulator
+        run: bash ios/build-simulator.sh
+      - name: Record build identity
+        run: |
+          echo 'Recetario 0.2 (1) — unsigned simulator validation' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Commit: ${{ github.sha }}' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No device IPA, signing, TestFlight upload or purchases.' >> "$GITHUB_STEP_SUMMARY"
+      # No artifacts/cache upload: this validation does not consume paid storage.
