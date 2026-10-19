@@ -73,7 +73,7 @@ try {
   manifest.appIconSourceSHA256 = crypto.createHash('sha256').update(fs.readFileSync('ios/Recetario/Assets.xcassets/AppIcon.appiconset/AppIcon.png')).digest('hex');
   manifest.compiledAssetsSHA256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(app, 'Assets.car'))).digest('hex');
   const save = () => fs.writeFileSync('artifacts/testflight/build.json', JSON.stringify(manifest,null,2)+'\n');
-  save();
+  save(); console.log("RECETARIO_PACKAGE_RECEIPT="+JSON.stringify(manifest));
   const deliver = operation => {
     const result = spawnSync('xcrun', ['altool', `--${operation}-app`, '--type', 'ios', '--file', artifact, '--apiKey', process.env.ASC_KEY_ID, '--apiIssuer', process.env.ASC_ISSUER_ID], {encoding:'utf8', maxBuffer:16*1024*1024});
     process.stdout.write(result.stdout || '');
