@@ -1,0 +1,33 @@
+name: iOS TestFlight (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recetario-testflight
+  cancel-in-progress: false
+jobs:
+  distribute:
+    if: github.repository == 'Krazel/recetario-ios' && github.ref == 'refs/heads/main' && github.event.repository.private == false
+    environment: app-store-production
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Archive, verify and upload to TestFlight
+        run: node ios/build-testflight.mjs
+        env:
+          RECETARIO_DISTRIBUTION: testflight
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+          IOS_APP_STORE_PROFILE_BASE64: ${{ secrets.IOS_APP_STORE_PROFILE_BASE64 }}
+      - name: Record upload identity
+        run: cat artifacts/testflight/build.json >> "$GITHUB_STEP_SUMMARY"
+      # No IPA artifact/cache storage or App Store release.
