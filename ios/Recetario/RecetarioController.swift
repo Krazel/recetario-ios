@@ -71,7 +71,7 @@ import SafariServices
             webView.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor),
             tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor), tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor), tabHeight,
-            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor), webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor), webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             progress.topAnchor.constraint(equalTo: webView.topAnchor), progress.leadingAnchor.constraint(equalTo: view.leadingAnchor), progress.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             retry.centerYAnchor.constraint(equalTo: view.centerYAnchor), retry.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28), retry.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28)
         ])
