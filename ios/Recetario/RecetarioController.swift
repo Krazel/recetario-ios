@@ -36,7 +36,7 @@ import AuthenticationServices
           const originalFetch = window.fetch;
           window.fetch = async function(...args) {
             const result = await originalFetch.apply(this, args);
-            if(result.status === 401 && new URL(result.url).origin === location.origin)
+            if(result.headers.get('X-Recetario-Session') === 'expired' && new URL(result.url).origin === location.origin)
               window.webkit.messageHandlers.recetario.postMessage({action:'sessionExpired'});
             return result;
           };

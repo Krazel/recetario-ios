@@ -19,7 +19,7 @@ jobs:
         run: bash ios/build-simulator.sh
       - name: Record build identity
         run: |
-          echo 'Recetario 0.2 (1) — unsigned simulator validation' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Recetario 0.2.1 (1) — unsigned simulator validation' >> "$GITHUB_STEP_SUMMARY"
           echo 'Commit: ${{ github.sha }}' >> "$GITHUB_STEP_SUMMARY"
           echo 'No device IPA, signing, TestFlight upload or purchases.' >> "$GITHUB_STEP_SUMMARY"
       # No artifacts/cache upload: this validation does not consume paid storage.
