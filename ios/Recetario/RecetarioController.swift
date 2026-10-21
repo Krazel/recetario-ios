@@ -1,9 +1,8 @@
 import UIKit
 import WebKit
 import SafariServices
-import AuthenticationServices
 
-@MainActor final class RecetarioController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, UITabBarDelegate, ASWebAuthenticationPresentationContextProviding {
+@MainActor final class RecetarioController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, UITabBarDelegate {
     private(set) var webView: WKWebView!
     private let progress = UIProgressView(progressViewStyle: .default)
     private var observation: NSKeyValueObservation?
@@ -15,12 +14,6 @@ import AuthenticationServices
     private var nativeState: NativeNavigationState?
     private var keyboardVisible = false
     private var bridgeAcknowledged = false
-    private var authSession: ASWebAuthenticationSession?
-    private var signIn: NativeSignIn?
-    private var exchangingSession = false
-    private let welcome = UIStackView()
-    private let signInButton = UIButton(type: .system)
-    private let signInMessage = UILabel()
     private let accent = UIColor(red: 0.73, green: 0.17, blue: 0.15, alpha: 1)
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,18 +23,7 @@ import AuthenticationServices
         config.websiteDataStore = .default()
         config.allowsInlineMediaPlayback = true
         config.userContentController.add(WeakScriptHandler(self), name: "recetario")
-        let bootstrap = """
-        if(location.origin === '\(NavigationPolicy.origin.absoluteString)') {
-          window.__recetarioIOS = 1;
-          const originalFetch = window.fetch;
-          window.fetch = async function(...args) {
-            const result = await originalFetch.apply(this, args);
-            if(result.headers.get('X-Recetario-Session') === 'expired' && new URL(result.url).origin === location.origin)
-              window.webkit.messageHandlers.recetario.postMessage({action:'sessionExpired'});
-            return result;
-          };
-        }
-        """
+        let bootstrap = "if(location.origin === 'https://recetario-krazel.krazel.chatgpt.site') window.__recetarioIOS = 1;"
         config.userContentController.addUserScript(WKUserScript(source: bootstrap, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
@@ -93,7 +75,6 @@ import AuthenticationServices
             progress.topAnchor.constraint(equalTo: webView.topAnchor), progress.leadingAnchor.constraint(equalTo: view.leadingAnchor), progress.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             retry.centerYAnchor.constraint(equalTo: view.centerYAnchor), retry.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28), retry.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28)
         ])
-        configureWelcome()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardChanged(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enteredBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(becameActive), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -128,28 +109,13 @@ import AuthenticationServices
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         nativeState = nil; bridgeAcknowledged = false; updateChrome()
     }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        retry.isHidden = true; updateChrome()
-        if exchangingSession {
-            exchangingSession = false; signInButton.isEnabled = true
-            welcome.isHidden = true; webView.isHidden = false
-            if initialURL.path != "" && initialURL.path != "/" { open(initialURL) }
-        }
-    }
-    func webView(_ webView: WKWebView, decidePolicyFor response: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        if response.isForMainFrame, let http = response.response as? HTTPURLResponse {
-            if http.statusCode == 401 { decisionHandler(.cancel); showSignIn(exchangingSession ? "La conexión ha caducado. Vuelve a intentarlo." : nil); return }
-            if http.statusCode >= 400 { decisionHandler(.cancel); exchangingSession = false; signInButton.isEnabled = true; retry.isHidden = false; return }
-        }
-        decisionHandler(.allow)
-    }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { retry.isHidden = true; updateChrome() }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { nativeState = nil; updateChrome(); retry.isHidden = false }
     func open(_ url: URL) {
         guard NavigationPolicy.isTrusted(url) else { return }
         initialURL = url
         guard isViewLoaded else { return }
         retry.isHidden = true
-        welcome.isHidden = true; webView.isHidden = false
         webView.load(URLRequest(url: url))
     }
     @objc private func reload() { open(initialURL) }
@@ -157,14 +123,11 @@ import AuthenticationServices
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { if (error as NSError).code != NSURLErrorCancelled { retry.isHidden = false } }
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = action.request.url else { decisionHandler(.cancel); return }
-        if NavigationPolicy.isTrusted(url), url.path == "/signout-with-chatgpt" {
-            decisionHandler(.cancel); signOut(); return
-        }
-        if (NavigationPolicy.isTrusted(url) && url.path == "/signin-with-chatgpt") || url.host == NavigationPolicy.signInOrigin.host {
-            decisionHandler(.cancel); showSignIn(); beginSignIn(); return
-        }
         if NavigationPolicy.isTrusted(url) { decisionHandler(.allow); return }
         if action.targetFrame?.isMainFrame == false, NavigationPolicy.isVideoEmbed(url) { decisionHandler(.allow); return }
+        // Sign-in redirects may use the platform's HTTPS identity hosts. No native bridge is trusted there.
+        let authHosts = ["chatgpt.com", "auth.openai.com", "auth0.openai.com", "accounts.google.com", "appleid.apple.com", "login.microsoftonline.com"]
+        if url.scheme == "https", authHosts.contains(url.host ?? ""), action.navigationType != .linkActivated { decisionHandler(.allow); return }
         decisionHandler(.cancel)
         if action.navigationType == .linkActivated, ["https", "http"].contains(url.scheme ?? "") { present(SFSafariViewController(url: url), animated: true) }
         else if action.navigationType == .linkActivated, url.scheme == "mailto" { UIApplication.shared.open(url) }
@@ -199,70 +162,8 @@ import AuthenticationServices
                 bridgeAcknowledged = true
                 webView.evaluateJavaScript("window.dispatchEvent(new Event('recetario-native-ready'));")
             }
-        } else if body["action"] as? String == "sessionExpired" {
-            showSignIn("Tu sesión ha caducado. Vuelve a entrar para continuar.")
         } else if body["action"] as? String == "subscription", presentedViewController == nil {
             present(UINavigationController(rootViewController: SubscriptionController(webView: webView)), animated: true)
-        }
-    }
-    private func configureWelcome() {
-        welcome.axis = .vertical; welcome.spacing = 22; welcome.alignment = .fill
-        welcome.translatesAutoresizingMaskIntoConstraints = false; welcome.isHidden = true
-        let brand = UILabel(); brand.text = "Recetario"; brand.font = .systemFont(ofSize: 36, weight: .bold); brand.textColor = accent
-        let subtitle = UILabel(); subtitle.text = "Tu cocina, a tu manera"; subtitle.font = .preferredFont(forTextStyle: .title2)
-        signInMessage.text = "Accede a tus recetas, tu menú y tu compra."; signInMessage.numberOfLines = 0; signInMessage.textColor = .secondaryLabel
-        signInButton.setTitle("Continuar con ChatGPT", for: .normal); signInButton.setTitleColor(.white, for: .normal)
-        signInButton.backgroundColor = accent; signInButton.layer.cornerRadius = 16
-        signInButton.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-        signInButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56).isActive = true
-        signInButton.addTarget(self, action: #selector(beginSignIn), for: .touchUpInside)
-        [brand,subtitle,signInMessage,signInButton].forEach(welcome.addArrangedSubview)
-        view.addSubview(welcome)
-        NSLayoutConstraint.activate([welcome.centerYAnchor.constraint(equalTo:view.safeAreaLayoutGuide.centerYAnchor),welcome.centerXAnchor.constraint(equalTo:view.centerXAnchor),welcome.widthAnchor.constraint(lessThanOrEqualToConstant:420),welcome.leadingAnchor.constraint(greaterThanOrEqualTo:view.safeAreaLayoutGuide.leadingAnchor,constant:28),welcome.trailingAnchor.constraint(lessThanOrEqualTo:view.safeAreaLayoutGuide.trailingAnchor,constant:-28)])
-        let width = welcome.widthAnchor.constraint(equalTo:view.safeAreaLayoutGuide.widthAnchor,constant:-56); width.priority = .defaultHigh; width.isActive = true
-    }
-    private func showSignIn(_ message: String? = nil) {
-        webView.stopLoading(); webView.isHidden = true; welcome.isHidden = false; retry.isHidden = true
-        nativeState = nil; exchangingSession = false; updateChrome(); progress.isHidden = true
-        signInButton.isEnabled = authSession == nil
-        signInMessage.text = message ?? "Accede a tus recetas, tu menú y tu compra."
-    }
-    @objc private func beginSignIn() {
-        guard authSession == nil else { return }
-        guard let attempt = try? NativeSignIn() else { showSignIn("No se pudo iniciar la conexión. Inténtalo de nuevo."); return }
-        signIn = attempt; signInButton.isEnabled = false
-        signInMessage.text = "Código de conexión: \(attempt.displayCode). Comprueba que coincide al continuar."
-        let session = ASWebAuthenticationSession(url: attempt.authorizationURL, callbackURLScheme: "krazel-recetario") { [weak self] callback,error in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.authSession = nil; self.signInButton.isEnabled = true
-                guard error == nil, let callback, let active = self.signIn, let request = active.exchangeRequest(callback:callback) else {
-                    self.signIn = nil
-                    self.showSignIn((error as? ASWebAuthenticationSessionError)?.code == .canceledLogin ? "Puedes iniciar sesión cuando quieras." : "No se pudo completar la conexión. Vuelve a intentarlo.")
-                    return
-                }
-                self.signIn = nil; self.exchangingSession = true
-                self.signInMessage.text = "Abriendo tu recetario…"; self.signInButton.isEnabled = false
-                // The exchange runs in WKWebView, so its HttpOnly cookie belongs to the app's persistent store.
-                self.webView.load(request)
-            }
-        }
-        session.presentationContextProvider = self
-        session.prefersEphemeralWebBrowserSession = false
-        authSession = session
-        if !session.start() { authSession = nil; signIn = nil; showSignIn("No se pudo abrir el acceso. Inténtalo de nuevo.") }
-    }
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor { view.window ?? ASPresentationAnchor() }
-    private func signOut() {
-        guard NavigationPolicy.isTrusted(webView.url) else { return }
-        webView.callAsyncJavaScript("const r = await fetch('/native/logout',{method:'POST'}); if(!r.ok) throw new Error('logout');", arguments:[:], in:nil, in:.page) { [weak self] result in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                switch result {
-                case .success: self.initialURL = NavigationPolicy.origin; self.showSignIn("Has cerrado sesión en este iPhone.")
-                case .failure: self.retry.isHidden = false
-                }
-            }
         }
     }
 }

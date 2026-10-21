@@ -1,8 +1,7 @@
 import Foundation
 
 enum NavigationPolicy {
-    static let origin = URL(string: "https://recetario-iphone.krazel-zodiac-daily.workers.dev")!
-    static let signInOrigin = URL(string: "https://recetario-krazel.krazel.chatgpt.site")!
+    static let origin = URL(string: "https://recetario-krazel.krazel.chatgpt.site")!
     static func isTrusted(_ url: URL?) -> Bool {
         guard let url else { return false }
         return url.scheme == "https" && url.host == origin.host && (url.port == nil || url.port == 443) && url.user == nil && url.password == nil

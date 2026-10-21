@@ -2,6 +2,7 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.2.1",
-  "buildNumber": "1"
+  "marketingVersion": "0.2",
+  "buildNumber": "2",
+  "distributionBlocked": "Login nativo pendiente. Gateway adicional rechazado por el usuario el 21/10/2026. No subir una beta hasta verificar una solucion soportada sin ese servicio."
 }

@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import {requireAltoolSuccess} from './altool-result.mjs';
 
 const cfg = JSON.parse(fs.readFileSync('ios/testflight.json'));
+assert(!cfg.distributionBlocked, cfg.distributionBlocked);
 assert(process.platform === 'darwin' && process.env.RECETARIO_DISTRIBUTION === 'testflight', 'Explicit macOS TestFlight environment required');
 assert(process.env.RUNNER_TEMP, 'RUNNER_TEMP required');
 const temp = fs.mkdtempSync(path.join(process.env.RUNNER_TEMP, 'recetario-signing-'));
