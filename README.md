@@ -1,12 +1,16 @@
-# Recetario iOS
-UIKit + WKWebView client for Recetario. Version 0.2 (1), iOS 17 or later.
+# Recetario iPhone · 0.3 (1)
 
-This repository contains the iOS client and manual simulator validation only.
-The web service, user recipes, server source, credentials and private source history are not included.
+UIKit + locally bundled interface, SQLite on device, recipes and photos offline.
+Menus, cooking timers, pantry, shopping, preferences and complete JSON backups
+work without a user account. AI uses App Attest and a protected server endpoint;
+API keys and server credentials are never part of this repository.
 
-Run `bash ios/build-simulator.sh` on macOS with Xcode and XcodeGen.
-CI uses a standard macOS runner in this public repository. No Actions caches or artifacts are uploaded.
-The workflow compiles and runs unit tests. It does not sign an IPA, upload to TestFlight or enable purchases.
+The owner explicitly requested a public client repository and standard public
+macOS CI on 4 November 2026. The Site, server source and user recipe data remain
+private. No production data or runtime secrets are included here.
 
-The hosted application requires sign-in and an authorized account. Native navigation cooperates with the web interface; it is not an offline app.
+Run `bash ios/build-simulator.sh` with Xcode and XcodeGen. The manual simulator
+workflow compiles and runs XCTest without signing, uploading or purchases.
+TestFlight and App Review remain blocked until runtime/device checks are done.
+
 All rights reserved, Krazel Studio.

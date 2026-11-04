@@ -1,0 +1,295 @@
+{
+  "format": 1,
+  "files": [
+    {
+      "path": "assets/index-D9S0-aVd.css",
+      "bytes": 350528,
+      "sha256": "bbbb824b2c48faae1e8b2bae65711d71da5ffaebc69aa88c80cb364ae1d291a3"
+    },
+    {
+      "path": "assets/index-zD6kiD2q.js",
+      "bytes": 673610,
+      "sha256": "56c8c57ba9f193ed0aa6d31e986c19131ada60216e9196ebf921fe6686a7e58b"
+    },
+    {
+      "path": "images/design/pantry.png",
+      "bytes": 1566789,
+      "sha256": "40e16a8fd08f39b32882589e57b3b25ab2a68e40a12042ffb6d8b10d5ca6a685"
+    },
+    {
+      "path": "images/design/recipes.png",
+      "bytes": 1776579,
+      "sha256": "a9f2b2631d005b318167fed9dcb61de781cfaa506a77c222e500f3b095e8f55d"
+    },
+    {
+      "path": "images/design/shared.png",
+      "bytes": 1453925,
+      "sha256": "2689d9898bfbbfe9edbfae38d7ceda13ea6ba42f652e8b611037783e4cac92a8"
+    },
+    {
+      "path": "images/design/v3-recipes.png",
+      "bytes": 1944182,
+      "sha256": "d3edf74cf26f4c7f325ef4db695a4256e8e2b16b70c3ba7255b1634849da2b37"
+    },
+    {
+      "path": "images/design/v3-shared.png",
+      "bytes": 1819182,
+      "sha256": "4fb0d5cb65049bc2cca9a5f2cd324118ca688fa7b1598f84c64f2023f486523f"
+    },
+    {
+      "path": "images/kitchen/appliances.png",
+      "bytes": 1732376,
+      "sha256": "15db1d8cb5021365b3d7fba937bd04a0d373be69b2694e3456f0a0f0d7550f86"
+    },
+    {
+      "path": "images/products/app_cart.png",
+      "bytes": 78459,
+      "sha256": "61666b29e06d3c77462687b513a28f2d9341099aa2739512b14799d9638ecd61"
+    },
+    {
+      "path": "images/products/preset_breakfast.png",
+      "bytes": 86034,
+      "sha256": "ceb3a9c6de482f216d162b1a7d7f806c44f30ac15570a3fb32b63396b116a901"
+    },
+    {
+      "path": "images/products/preset_cleaning.png",
+      "bytes": 78468,
+      "sha256": "a6c9fd5a6b81477f592f8414bd4d0bde460de3bdc59dbaec409d4b0504bdda3c"
+    },
+    {
+      "path": "images/products/preset_dinner.png",
+      "bytes": 76349,
+      "sha256": "21fb915aa3cb64e2b980f3510f5fd1097ec3f2b85752c89735401cda7c6e656a"
+    },
+    {
+      "path": "images/products/preset_weekly.png",
+      "bytes": 83687,
+      "sha256": "74b4e92f529f94ee386c56e59725a66d1abd542a4e37ead135fbdcdc6d9d579c"
+    },
+    {
+      "path": "images/products/product_apple.png",
+      "bytes": 80092,
+      "sha256": "ac0de517df095b73f2d4251011d717328289ffcdd615501cf9cee906461520ef"
+    },
+    {
+      "path": "images/products/product_baby_food.png",
+      "bytes": 86980,
+      "sha256": "6201e7a552830189923d8e3372347ce65f71dd9db7437f1ca9cd9915a5ac6fcf"
+    },
+    {
+      "path": "images/products/product_banana.png",
+      "bytes": 82135,
+      "sha256": "b31ff21d04cb6005bdee046f3dc1046e0e604fb64a7dcabbe03cd9e8d84682b4"
+    },
+    {
+      "path": "images/products/product_bread.png",
+      "bytes": 84161,
+      "sha256": "15d5fbef151cda231e5308928247ef8ef4a7711ecffdf2695e7b4f1525d023c2"
+    },
+    {
+      "path": "images/products/product_butter.png",
+      "bytes": 85606,
+      "sha256": "cb345c7542443950230bd4602b3a94564c09c2b5696fabdfbbd5cd1926be1c80"
+    },
+    {
+      "path": "images/products/product_cereal.png",
+      "bytes": 96873,
+      "sha256": "fda72c4ef475ae83460624332b4e20769f190a348d0b62a015604c8ebe227ec8"
+    },
+    {
+      "path": "images/products/product_cheese.png",
+      "bytes": 81581,
+      "sha256": "c2434505d3cb08e948e32b2a35cb289826c114ff4f767d8d742c07e2a53540df"
+    },
+    {
+      "path": "images/products/product_chicken.png",
+      "bytes": 83864,
+      "sha256": "074a7393d8df201d77ed90ec96292fbacd59e6483519b6db4d4f93ada1cd3b3c"
+    },
+    {
+      "path": "images/products/product_coffee.png",
+      "bytes": 91330,
+      "sha256": "d19d428a44d5bdf14d4fce3ca97e764878af1b370144d491532e497d2e43b1bb"
+    },
+    {
+      "path": "images/products/product_default.png",
+      "bytes": 82567,
+      "sha256": "339c60cb6f30270decc041313874ab12ce993342ff380bae1c71deea9e35b17f"
+    },
+    {
+      "path": "images/products/product_detergent.png",
+      "bytes": 79437,
+      "sha256": "41017cd0c83a58e05abff5452f2f9299df788ba38dedb0dabe5c4fc207da9579"
+    },
+    {
+      "path": "images/products/product_diapers.png",
+      "bytes": 83657,
+      "sha256": "02912f202729d156d7f8be70d2193559d3e70a9ca60ff2043ed8ee760a183198"
+    },
+    {
+      "path": "images/products/product_dish_soap.png",
+      "bytes": 84184,
+      "sha256": "d91619a77fb30500dacd234789ca479b738023712c87368f4376b2dcb755793e"
+    },
+    {
+      "path": "images/products/product_eggs.png",
+      "bytes": 77659,
+      "sha256": "8538702a6f17dd3c3b85b58e5351cb74a416bf2846b7ac658abd57b56f71aa28"
+    },
+    {
+      "path": "images/products/product_fish.png",
+      "bytes": 87128,
+      "sha256": "9e38d4ccff298294dbee47609fc9b83de9da4bdfce50ed42efb18733d4852501"
+    },
+    {
+      "path": "images/products/product_flour.png",
+      "bytes": 84267,
+      "sha256": "0443a2d405e56e6327f539972cd66e465680126835462125964d2c4a8e6debc3"
+    },
+    {
+      "path": "images/products/product_frozen.png",
+      "bytes": 83323,
+      "sha256": "721c52e5063673c47dd4cae29191699c7f87783b6adf6b920760a410b378eae4"
+    },
+    {
+      "path": "images/products/product_ham.png",
+      "bytes": 91002,
+      "sha256": "a599b0a407ee250e81209f6a3e560f77a3f44779ffda6b986e0c6c585c0c885e"
+    },
+    {
+      "path": "images/products/product_juice.png",
+      "bytes": 77129,
+      "sha256": "1671cf14afc4cc66834c8f98a093b21920743b41a68d8c3925869161f1b72b11"
+    },
+    {
+      "path": "images/products/product_meat.png",
+      "bytes": 97105,
+      "sha256": "f715f106671bdc91b802f5f3a5a668ee552edbbadc7c5b99c7fa04336b17024a"
+    },
+    {
+      "path": "images/products/product_medicine.png",
+      "bytes": 80538,
+      "sha256": "8a7a1e495901c8ea9449e53260c69cb28c6ec09b3917995225eebc2a8e052f62"
+    },
+    {
+      "path": "images/products/product_milk.png",
+      "bytes": 74018,
+      "sha256": "a9e7497e9de4d1171a1a34397aabe5e2644fc7aa86b9368425b13202cc7b2a56"
+    },
+    {
+      "path": "images/products/product_oil.png",
+      "bytes": 82092,
+      "sha256": "abff7c79d703ed3b6340447110483bce18a1e2de9a2c09ae2cbc7d8a8b3aa8ce"
+    },
+    {
+      "path": "images/products/product_paper.png",
+      "bytes": 78883,
+      "sha256": "681aba50431e131007e70898e1b8d44c146ec4c6901360b2657cb3247a04ee34"
+    },
+    {
+      "path": "images/products/product_pasta.png",
+      "bytes": 91722,
+      "sha256": "cc9dea11efe2b1e47b2a12224d4e56faafc30c7adf075d23f3d75bcf7cbcb949"
+    },
+    {
+      "path": "images/products/product_pet_food.png",
+      "bytes": 94925,
+      "sha256": "a43e6fc38fe1e8326d10dc96e58e807b5ff6ccb8268e388aae9b07a3cc337cc7"
+    },
+    {
+      "path": "images/products/product_rice.png",
+      "bytes": 96778,
+      "sha256": "e2c7fedbe63bc6ec1de4883b944bff84a01fb05e3863cce1b6b56ede8af8c882"
+    },
+    {
+      "path": "images/products/product_salt.png",
+      "bytes": 87597,
+      "sha256": "2a8b035704ba5f6d640933831ecdee14c7bff0d0a2528e5d1ef816df9d63db72"
+    },
+    {
+      "path": "images/products/product_shampoo.png",
+      "bytes": 76378,
+      "sha256": "a06d595bb6f89965cd0be4fa360f9166a3dde08c717522a517a0cb5cdc07d1c5"
+    },
+    {
+      "path": "images/products/product_soap.png",
+      "bytes": 84686,
+      "sha256": "7a0fac7bf1a49e3675ef3cad830ee6dacf65d406392c41d726886a8631c0f707"
+    },
+    {
+      "path": "images/products/product_soda.png",
+      "bytes": 80971,
+      "sha256": "fb0bdced25bd1daa5c8d118e41b14b1402c97b9b8fabe60610c9d609d6596e53"
+    },
+    {
+      "path": "images/products/product_softener.png",
+      "bytes": 84600,
+      "sha256": "cf376a9de235cb8b7440408947b8fb1e89d865ba9b3b34605c24cacf5c356dbb"
+    },
+    {
+      "path": "images/products/product_sponge.png",
+      "bytes": 84205,
+      "sha256": "21fac679ff17e77684865d28e35224e8ccb0002efb483ee8abea1a186e8e02cb"
+    },
+    {
+      "path": "images/products/product_sugar.png",
+      "bytes": 82305,
+      "sha256": "2df9c0aa2f036eada450026f737edb92813194bca146a39cdb13136184152d68"
+    },
+    {
+      "path": "images/products/product_tea.png",
+      "bytes": 92868,
+      "sha256": "d4c46e7d9af1f5a244538e25cc8e1dc64e4a1659338874355e4a2a8ad5c6f575"
+    },
+    {
+      "path": "images/products/product_toilet_cleaner.png",
+      "bytes": 80016,
+      "sha256": "87a3482522e92392d87d8ff7ef4e8437e1f4037a9898e9b3dccba5cb85b4db20"
+    },
+    {
+      "path": "images/products/product_tomato.png",
+      "bytes": 80848,
+      "sha256": "cc3781182f7f18e58762eec82e01082e601db2d15922f7ee8978da81ea4a5da8"
+    },
+    {
+      "path": "images/products/product_toothpaste.png",
+      "bytes": 83160,
+      "sha256": "94a2dfdd952c23680090c86dddc09577413699c5f1229f27e66347e5dd4136e8"
+    },
+    {
+      "path": "images/products/product_trash_bags.png",
+      "bytes": 94990,
+      "sha256": "e67451dd5ffc995097035dc20d45cdce422f921759a8d56fd73be3a72ba4af8f"
+    },
+    {
+      "path": "images/products/product_water.png",
+      "bytes": 79075,
+      "sha256": "cf9975a3713978cf0d60d0240a54619a59e7c2c761fe947817ada6cbf0f26b25"
+    },
+    {
+      "path": "images/products/product_wine.png",
+      "bytes": 77334,
+      "sha256": "e33f83f07c881708b681e1f96402df9591043debb7e74014c4f990dc651ae665"
+    },
+    {
+      "path": "images/products/product_yogurt.png",
+      "bytes": 86467,
+      "sha256": "14668a85317b762ec70427245ed19b2f45500cb8d18aff15c0dadbcf6176119c"
+    },
+    {
+      "path": "images/tomato-pasta.jpg",
+      "bytes": 1729098,
+      "sha256": "6ca71175dbdf0fa21e9c6637b1e9655bb031d48e3142ad71aa75ce342dfc999d"
+    },
+    {
+      "path": "migrations.json",
+      "bytes": 7035,
+      "sha256": "62def9cc33b854f527e63a9aa37238e2ac207f6546c1e8cb9b4c3627d20a1e68"
+    },
+    {
+      "path": "mobile/index.html",
+      "bytes": 466,
+      "sha256": "ead6791f5f4257f627a11d3c7aabacfabe5741a188d9f65bcfc6867a3c7ebd3e"
+    }
+  ]
+}

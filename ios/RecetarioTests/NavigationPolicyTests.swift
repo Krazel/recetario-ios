@@ -8,6 +8,8 @@ final class NavigationPolicyTests: XCTestCase {
     func testSharedLinkIsEncodedAndNeverExecuted() {
         let good = URL(string: "krazel-recetario://import?url=https%3A%2F%2Fwww.instagram.com%2Freel%2Fabc%2F")!
         XCTAssertEqual(NavigationPolicy.importURL(good)?.host, NavigationPolicy.origin.host)
+        XCTAssertEqual(NavigationPolicy.importSourceURL(good)?.host, "www.instagram.com")
+        XCTAssertNil(NavigationPolicy.importSourceURL(URL(string: "krazel-recetario://import?url=file%3A%2F%2F%2Fprivate%2Fsecret")!))
         XCTAssertNil(NavigationPolicy.importURL(URL(string: "krazel-recetario://import?url=javascript%3Aalert(1)")!))
     }
     func testVideoFramesDoNotBecomeTrustedMainDocuments() {

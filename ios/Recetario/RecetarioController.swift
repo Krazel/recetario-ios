@@ -4,6 +4,8 @@ import SafariServices
 
 @MainActor final class RecetarioController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, UITabBarDelegate {
     private(set) var webView: WKWebView!
+    var onDocumentReady: (() -> Void)?
+    var onAccountDeleted: ((String) -> Void)?
     private let progress = UIProgressView(progressViewStyle: .default)
     private var observation: NSKeyValueObservation?
     private let retry = UIButton(type: .system)
@@ -109,7 +111,7 @@ import SafariServices
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         nativeState = nil; bridgeAcknowledged = false; updateChrome()
     }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { retry.isHidden = true; updateChrome() }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { retry.isHidden = true; updateChrome(); onDocumentReady?() }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { nativeState = nil; updateChrome(); retry.isHidden = false }
     func open(_ url: URL) {
         guard NavigationPolicy.isTrusted(url) else { return }
@@ -162,6 +164,8 @@ import SafariServices
                 bridgeAcknowledged = true
                 webView.evaluateJavaScript("window.dispatchEvent(new Event('recetario-native-ready'));")
             }
+        } else if body["action"] as? String == "accountDeleted",let accountId=body["accountId"] as? String {
+            onAccountDeleted?(accountId)
         } else if body["action"] as? String == "subscription", presentedViewController == nil {
             present(UINavigationController(rootViewController: SubscriptionController(webView: webView)), animated: true)
         }
