@@ -90,6 +90,9 @@ import AVFoundation
         case "clipboard":
             guard let text = body["text"] as? String, text.utf8.count <= 100_000 else { throw LocalRecipeError.invalid("El texto es demasiado largo.") }
             UIPasteboard.general.string = text; return true
+        case "clipboard-read":
+            guard UIApplication.shared.applicationState == .active else { throw LocalRecipeError.invalid("Abre la app para pegar un enlace.") }
+            return UIPasteboard.general.string ?? ""
         case "navigation":
             cooking = body["keepAwake"] as? Bool == true
             UIApplication.shared.isIdleTimerDisabled = cooking && UIApplication.shared.applicationState == .active
@@ -104,6 +107,16 @@ import AVFoundation
             }
             return true
         case "backup-export": try await exportBackup(); return true
+        case "export-json":
+            guard let data = body["data"], JSONSerialization.isValidJSONObject(data), presentedViewController == nil else { throw LocalRecipeError.invalid("No se pudo preparar la exportación.") }
+            let bytes = try JSONSerialization.data(withJSONObject: data)
+            try exportJSON(bytes, name: "Recetario-recetas.json"); return true
+        case "print":
+            guard presentedViewController == nil else { throw LocalRecipeError.invalid("Cierra la ventana actual antes de imprimir.") }
+            let controller = UIPrintInteractionController.shared
+            controller.printFormatter = webView.viewPrintFormatter()
+            controller.present(from: CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1), in: view, animated: true, completionHandler: nil)
+            return true
         case "backup-import":
             guard presentedViewController == nil else { throw LocalRecipeError.invalid("Cierra la ventana actual antes de abrir una copia.") }
             let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json], asCopy: true)
@@ -147,9 +160,13 @@ import AVFoundation
         guard let value, JSONSerialization.isValidJSONObject(value) else { throw LocalRecipeError.invalid("No se pudo preparar la copia completa.") }
         let bytes = try JSONSerialization.data(withJSONObject: value, options: [.sortedKeys])
         guard bytes.count <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
+        try exportJSON(bytes, name: "Recetario-copia-completa.json")
+    }
+    private func exportJSON(_ bytes: Data, name: String) throws {
+        guard bytes.count <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let file = directory.appendingPathComponent("Recetario-copia-completa.json")
+        let file = directory.appendingPathComponent(name)
         try bytes.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         share([file], cleanup: directory)
     }

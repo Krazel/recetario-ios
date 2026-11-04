@@ -2,14 +2,14 @@
   "format": 1,
   "files": [
     {
+      "path": "assets/index-D9NijcgG.js",
+      "bytes": 674690,
+      "sha256": "0cce49036f0d9ee4fbbef470d2c38f5c36a0def6fb23a73e093625152c38528d"
+    },
+    {
       "path": "assets/index-D9S0-aVd.css",
       "bytes": 350528,
       "sha256": "bbbb824b2c48faae1e8b2bae65711d71da5ffaebc69aa88c80cb364ae1d291a3"
-    },
-    {
-      "path": "assets/index-zD6kiD2q.js",
-      "bytes": 673610,
-      "sha256": "56c8c57ba9f193ed0aa6d31e986c19131ada60216e9196ebf921fe6686a7e58b"
     },
     {
       "path": "images/design/pantry.png",
@@ -289,7 +289,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 466,
-      "sha256": "ead6791f5f4257f627a11d3c7aabacfabe5741a188d9f65bcfc6867a3c7ebd3e"
+      "sha256": "ee7e4e795b0d38928ebb576fd2f368e2d68fe639fd82211f5edc6c692ead85a9"
     }
   ]
 }
