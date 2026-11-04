@@ -33,7 +33,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Recetario/Recetario.entitlements
         APP_ATTEST_ENVIRONMENT: production
-        RECETARIO_AI_ENDPOINT: ''
+        RECETARIO_AI_ENDPOINT: 'https://recetario-ia-krazel.krazel.chatgpt.site/native'
       configs:
         Debug:
           APP_ATTEST_ENVIRONMENT: development

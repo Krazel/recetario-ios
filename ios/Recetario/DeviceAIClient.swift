@@ -34,7 +34,7 @@ actor DeviceAIClient {
         guard DCAppAttestService.shared.isSupported else { throw LocalRecipeError.invalid("Esta instalación no permite verificar el acceso seguro a la IA. Tus recetas locales siguen disponibles.") }
         guard !busy else { throw LocalRecipeError.invalid("Hay otra petición de IA en curso. Espera a que termine.") }
         busy = true; defer { busy = false }
-        guard let path = input["path"] as? String, ["/api/import", "/api/assistant", "/api/assistant/image", "/api/native/budget"].contains(path),
+        guard let path = input["path"] as? String, ["/api/import", "/api/assistant", "/api/assistant/image", "/api/recipe-media", "/api/native/budget"].contains(path),
               let method = input["method"] as? String, ["GET", "POST"].contains(method),
               let raw = input["body"] as? String, let bytes = Data(base64Encoded: raw), bytes.count <= 12_000_000 else { throw LocalRecipeError.invalid("Petición de IA no válida.") }
         let key = try await enrolledKey(endpoint)

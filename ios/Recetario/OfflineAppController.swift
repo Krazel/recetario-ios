@@ -175,7 +175,7 @@ import AVFoundation
         Task {
             do {
                 let scoped = file.startAccessingSecurityScopedResource(); defer { if scoped { file.stopAccessingSecurityScopedResource() } }
-                guard let count = try file.resourceValues(forKeys: [.fileSizeKey]).fileSize, count <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
+                guard let fileSize = try file.resourceValues(forKeys: [.fileSizeKey]).fileSize, fileSize <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
                 let value = try JSONSerialization.jsonObject(with: Data(contentsOf: file))
                 let summary = try await webView.callAsyncJavaScript("return await window.__recetarioInspect(value);", arguments: ["value": value], in: nil, contentWorld: .page) as? [String: Any]
                 let count = summary?["recipes"] as? Int ?? 0

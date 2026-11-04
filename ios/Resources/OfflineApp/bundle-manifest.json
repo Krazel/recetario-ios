@@ -2,9 +2,9 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-D9NijcgG.js",
-      "bytes": 674690,
-      "sha256": "0cce49036f0d9ee4fbbef470d2c38f5c36a0def6fb23a73e093625152c38528d"
+      "path": "assets/index-CsZYxDsz.js",
+      "bytes": 676923,
+      "sha256": "3bb5bdd9ab2c930112b18064ed745f397192eff80035a4b4375f15ea175fa008"
     },
     {
       "path": "assets/index-D9S0-aVd.css",
@@ -289,7 +289,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 466,
-      "sha256": "ee7e4e795b0d38928ebb576fd2f368e2d68fe639fd82211f5edc6c692ead85a9"
+      "sha256": "a2022d86c1e5684be342d726634d5538d931716c561242dc8a2d082b97d4d046"
     }
   ]
 }
