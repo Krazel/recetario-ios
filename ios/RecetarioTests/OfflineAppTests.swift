@@ -10,15 +10,15 @@ import WebKit
         defer { try? FileManager.default.removeItem(at: folder) }
         let database = try DeviceDatabase(file: folder.appendingPathComponent("app.sqlite"))
         let controller = try OfflineAppController(database: database)
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
-        let window = UIWindow(windowScene: scene)
+        // The app uses AppDelegate windows rather than a scene manifest.
+        let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = controller; window.makeKeyAndVisible()
         defer { window.isHidden = true }
         controller.loadViewIfNeeded()
         let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
         var ready = false
         for _ in 0..<240 {
-            ready = (try? await web.evaluateJavaScript("typeof window.__recetarioExport === 'function' && document.body.innerText.includes('Recetario')")) as? Bool == true
+            ready = (try? await web.evaluateJavaScript("typeof window.__recetarioExport === 'function' && document.querySelector('button') !== null")) as? Bool == true
             if ready { break }
             try await Task.sleep(nanoseconds: 250_000_000)
         }
