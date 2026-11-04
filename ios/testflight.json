@@ -4,7 +4,7 @@
   "teamId": "B2X6D3A9J9",
   "marketingVersion": "0.3",
   "buildNumber": "1",
-  "distributionBlocked": "Candidata iPhone local 0.3 (1): pendiente CI simulador, activacion y QA fisica de App Attest/IA, fotos/copias/teclado/temporizadores. No subir a TestFlight ni App Review por ejecutar la validacion de fuente.",
+  "distributionBlocked": "Candidata iPhone local 0.3 (1): compilacion universal y 22 pruebas nativas verificadas. Pendiente apertura autorizada de entrada IA y QA fisica de App Attest, fotos/copias/teclado/temporizadores. No subir a TestFlight ni App Review por ejecutar la validacion de fuente.",
   "lastKnownTestFlight": {
     "version": "0.2",
     "build": "2",
