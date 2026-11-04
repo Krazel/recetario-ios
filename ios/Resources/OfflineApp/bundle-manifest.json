@@ -2,9 +2,9 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-CsZYxDsz.js",
-      "bytes": 676923,
-      "sha256": "3bb5bdd9ab2c930112b18064ed745f397192eff80035a4b4375f15ea175fa008"
+      "path": "assets/index-CCuLhYBO.js",
+      "bytes": 677560,
+      "sha256": "beb7fb8907ade43d745711d02287144627d92d409e2e1425c4356a3bf9356196"
     },
     {
       "path": "assets/index-D9S0-aVd.css",
@@ -283,13 +283,13 @@
     },
     {
       "path": "migrations.json",
-      "bytes": 7035,
-      "sha256": "62def9cc33b854f527e63a9aa37238e2ac207f6546c1e8cb9b4c3627d20a1e68"
+      "bytes": 6771,
+      "sha256": "171424af8c65ceced9b59473da0deaf4db6a6a275fa16f31d1d5192af0d2fd5a"
     },
     {
       "path": "mobile/index.html",
       "bytes": 466,
-      "sha256": "a2022d86c1e5684be342d726634d5538d931716c561242dc8a2d082b97d4d046"
+      "sha256": "8b974566369db5c0591a9b0c5239fc3f28b0b1230fce0c56c2beb22c5cf2bd41"
     }
   ]
 }

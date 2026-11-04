@@ -207,10 +207,10 @@ import AVFoundation
         if trusted(url) { decisionHandler(.allow); return }
         if action.targetFrame?.isMainFrame == false && NavigationPolicy.isVideoEmbed(url) { decisionHandler(.allow); return }
         decisionHandler(.cancel)
-        if action.navigationType == .linkActivated && ["https", "http", "mailto"].contains(url.scheme ?? "") { UIApplication.shared.open(url) }
+        if action.navigationType == .linkActivated && (["https", "http", "mailto"].contains(url.scheme ?? "") || url.absoluteString == "shortcuts://create-shortcut") { UIApplication.shared.open(url) }
     }
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for action: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if let url = action.request.url, ["https", "http", "mailto"].contains(url.scheme ?? "") { UIApplication.shared.open(url) }
+        if let url = action.request.url, (["https", "http", "mailto"].contains(url.scheme ?? "") || url.absoluteString == "shortcuts://create-shortcut") { UIApplication.shared.open(url) }
         return nil
     }
 }
