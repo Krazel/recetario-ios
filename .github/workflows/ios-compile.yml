@@ -1,0 +1,23 @@
+name: iOS compile (manual, public standard runner)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recetario-ios-compile
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event.repository.private == false
+    runs-on: macos-26-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Compile current client
+        working-directory: ios
+        run: |
+          xcodegen generate
+          xcodebuild -project Recetario.xcodeproj -scheme Recetario -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+      # Compilation only; no signing, upload, artifacts or paid storage.
