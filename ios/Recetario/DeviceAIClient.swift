@@ -44,7 +44,15 @@ actor DeviceAIClient {
         if let context = input["context"] { payload["context"] = context }
         let data = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys, .withoutEscapingSlashes])
         guard data.count <= 17_000_000 else { throw LocalRecipeError.invalid("La petición contiene demasiado material. Selecciona menos recetas o un vídeo más corto.") }
-        let assertion = try await DCAppAttestService.shared.generateAssertion(key, clientDataHash: Data(SHA256.hash(data: data)))
+        let assertion: Data
+        do { assertion = try await DCAppAttestService.shared.generateAssertion(key, clientDataHash: Data(SHA256.hash(data: data))) }
+        catch let error as DCError where error.code == .invalidKey {
+            // App Attest keys can disappear on reinstall while Keychain survives.
+            // Clear only this unusable reference; the next explicit request may
+            // enroll again. Never retry a generation or reset server spending.
+            SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: keyService, kSecAttrAccount as String: "key-id"] as CFDictionary)
+            throw LocalRecipeError.invalid("La verificación de esta instalación ha cambiado. Vuelve a intentarlo para verificarla. No se ha enviado ninguna generación.")
+        }
         var request = URLRequest(url: endpoint.appendingPathComponent("request")); request.httpMethod = "POST"; request.httpBody = data
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(key, forHTTPHeaderField: "X-Recetario-Key")
