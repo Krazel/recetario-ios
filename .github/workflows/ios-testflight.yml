@@ -10,7 +10,7 @@ jobs:
   distribute:
     if: github.repository == 'Krazel/recetario-ios' && github.ref == 'refs/heads/main' && github.event.repository.private == false
     environment: app-store-production
-    runs-on: macos-26
+    runs-on: macos-26-intel
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4

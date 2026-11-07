@@ -4,11 +4,15 @@
   "teamId": "B2X6D3A9J9",
   "marketingVersion": "0.3",
   "buildNumber": "1",
-  "distributionBlocked": "Candidata iPhone local 0.3 (1): compilacion universal y 22 pruebas nativas verificadas. Entrada IA publica activada y comprobada; pendiente QA fisica de App Attest, fotos/copias/teclado/temporizadores. No subir a TestFlight ni App Review por ejecutar la validacion de fuente.",
   "lastKnownTestFlight": {
     "version": "0.2",
     "build": "2",
     "audience": "internal",
     "date": "2026-10-19"
+  },
+  "distributionAuthorization": {
+    "date": "2026-11-07",
+    "scope": "El titular ordena subir esta nueva version a TestFlight interno para probar iPhone sin cuentas; no App Review ni testers externos.",
+    "physicalQA": "Pendiente: esta beta interna permite realizarla."
   }
 }
