@@ -11,6 +11,10 @@ private. No production data or runtime secrets are included here.
 
 Run `bash ios/build-simulator.sh` with Xcode and XcodeGen. The manual simulator
 workflow compiles and runs XCTest without signing, uploading or purchases.
-TestFlight and App Review remain blocked until runtime/device checks are done.
+The owner authorized an internal TestFlight upload on 7 November 2026.
+Version 0.3 (1) is VALID and IN_BETA_TESTING in the existing internal group,
+verified through App Store Connect after successful CI run 42377684469.
+Physical iPhone checks, including positive App Attest, remain pending.
+External testing and App Review have not been started.
 
 All rights reserved, Krazel Studio.
