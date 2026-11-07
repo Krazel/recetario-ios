@@ -40,6 +40,8 @@ try {
   assert.equal(provision.Entitlements['get-task-allow'], false);
   assert.equal(provision.Entitlements['beta-reports-active'], true);
   assert(Date.parse(provision.ExpirationDate) > Date.now(), 'Expired profile');
+  const automatic = !provision.Entitlements['com.apple.developer.devicecheck.appattest-environment'];
+  if (automatic) console.log('Refreshing App Attest signing with official Xcode automatic provisioning.');
   const profiles = path.join(process.env.HOME, 'Library', 'MobileDevice', 'Provisioning Profiles');
   fs.mkdirSync(profiles, {recursive:true});
   installedProfile = path.join(profiles, `${provision.UUID}.mobileprovision`);
@@ -52,7 +54,9 @@ try {
   run('security', ['set-key-partition-list', '-S', 'apple-tool:,apple:,codesign:', '-s', '-k', password, keychain]);
   run('xcodegen', ['generate'], {cwd:'ios'});
   const archive = path.join(temp, 'Recetario.xcarchive');
-  run('xcodebuild', ['archive', '-project', 'ios/Recetario.xcodeproj', '-scheme', 'Recetario', '-configuration', 'Release', '-destination', 'generic/platform=iOS', '-archivePath', archive, 'ARCHS=arm64', 'ONLY_ACTIVE_ARCH=NO', 'CODE_SIGN_STYLE=Manual', `DEVELOPMENT_TEAM=${cfg.teamId}`, 'CODE_SIGN_IDENTITY=Apple Distribution', `PROVISIONING_PROFILE_SPECIFIER=${provision.Name}`]);
+  const authentication = ['-allowProvisioningUpdates','-authenticationKeyPath',apiKeyPath,'-authenticationKeyID',process.env.ASC_KEY_ID,'-authenticationKeyIssuerID',process.env.ASC_ISSUER_ID];
+  const signing = automatic ? ['CODE_SIGN_STYLE=Automatic',...authentication] : ['CODE_SIGN_STYLE=Manual','CODE_SIGN_IDENTITY=Apple Distribution',`PROVISIONING_PROFILE_SPECIFIER=${provision.Name}`];
+  run('xcodebuild', ['archive', '-project', 'ios/Recetario.xcodeproj', '-scheme', 'Recetario', '-configuration', 'Release', '-destination', 'generic/platform=iOS', '-archivePath', archive, 'ARCHS=arm64', 'ONLY_ACTIVE_ARCH=NO', `DEVELOPMENT_TEAM=${cfg.teamId}`,...signing]);
   const app = path.join(archive, 'Products', 'Applications', 'Recetario.app');
   const info = readPlist(path.join(app, 'Info.plist'));
   assert.equal(info.CFBundleIdentifier, cfg.bundleId);
@@ -63,9 +67,9 @@ try {
   assert(fs.existsSync(path.join(app, 'PrivacyInfo.xcprivacy')), 'Missing privacy manifest');
   run('codesign', ['--verify', '--deep', '--strict', app]);
   const options = path.join(temp, 'ExportOptions.plist');
-  run('python3', ['-c', 'import plistlib,json,sys; plistlib.dump(json.load(sys.stdin),open(sys.argv[1],"wb"))', options], {input:JSON.stringify({method:'app-store-connect',destination:'export',teamID:cfg.teamId,signingStyle:'manual',signingCertificate:'Apple Distribution',provisioningProfiles:{[cfg.bundleId]:provision.Name},manageAppVersionAndBuildNumber:false,uploadSymbols:true,stripSwiftSymbols:true}),stdio:['pipe','inherit','inherit']});
+  run('python3', ['-c', 'import plistlib,json,sys; plistlib.dump(json.load(sys.stdin),open(sys.argv[1],"wb"))', options], {input:JSON.stringify({method:'app-store-connect',destination:'export',teamID:cfg.teamId,signingStyle:automatic?'automatic':'manual',...(automatic?{}:{signingCertificate:'Apple Distribution',provisioningProfiles:{[cfg.bundleId]:provision.Name}}),manageAppVersionAndBuildNumber:false,uploadSymbols:true,stripSwiftSymbols:true}),stdio:['pipe','inherit','inherit']});
   const output = path.join(temp, 'export');
-  run('xcodebuild', ['-exportArchive', '-archivePath', archive, '-exportOptionsPlist', options, '-exportPath', output]);
+  run('xcodebuild', ['-exportArchive', '-archivePath', archive, '-exportOptionsPlist', options, '-exportPath', output,...(automatic?authentication:[])]);
   const ipa = path.join(output, fs.readdirSync(output).find(name => name.endsWith('.ipa')));
   fs.mkdirSync('artifacts/testflight', {recursive:true});
   const artifact = `artifacts/testflight/Recetario-${cfg.marketingVersion}-build${cfg.buildNumber}-TestFlight.ipa`;
