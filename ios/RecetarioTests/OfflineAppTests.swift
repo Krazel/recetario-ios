@@ -4,6 +4,31 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class OfflineAppTests: XCTestCase {
+    func testCorrectionFlowsAndLayoutInRealWebView() async throws {
+        for size in [CGSize(width: 320, height: 740), CGSize(width: 390, height: 400), CGSize(width: 430, height: 900)] {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let database = try DeviceDatabase(file: folder.appendingPathComponent("corrections.sqlite"))
+            let controller = try OfflineAppController(database: database)
+            let window = UIWindow(frame: CGRect(origin: .zero, size: size))
+            window.rootViewController = controller; window.makeKeyAndVisible()
+            controller.loadViewIfNeeded(); controller.view.frame = CGRect(origin: .zero, size: size)
+            controller.view.setNeedsLayout(); controller.view.layoutIfNeeded()
+            defer { window.isHidden = true; try? FileManager.default.removeItem(at: folder) }
+            let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
+            for _ in 0..<240 {
+                if (try? await web.evaluateJavaScript("typeof window.__recetarioExport === 'function'")) as? Bool == true { break }
+                try await Task.sleep(nanoseconds: 250_000_000)
+            }
+            let file = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CorrectionFlow", withExtension: "js"))
+            let script = "return await " + (try String(contentsOf: file, encoding: .utf8))
+            let result = try await web.callAsyncJavaScript(script, arguments: [:], in: nil, contentWorld: .page) as? [String: Any]
+            print("RECETARIO_CORRECTION_UI=\(result ?? [:])")
+            XCTAssertEqual(result?["editor"] as? String, "contained")
+            XCTAssertEqual(result?["preferences"] as? String, "closed on save")
+            XCTAssertEqual(result?["width"] as? Int, Int(size.width))
+        }
+    }
     func testBundledAppStartsAndPersistsARecipeThroughTheNativeBridge() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)

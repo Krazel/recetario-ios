@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.3'
+    MARKETING_VERSION: '0.3.1'
     CURRENT_PROJECT_VERSION: '1'
     DEVELOPMENT_LANGUAGE: es
     CODE_SIGN_STYLE: Automatic
@@ -42,7 +42,11 @@ targets:
   RecetarioTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [RecetarioTests]
+    sources:
+      - path: RecetarioTests
+        excludes: [CorrectionFlow.js]
+      - path: RecetarioTests/CorrectionFlow.js
+        buildPhase: resources
     dependencies:
       - target: Recetario
     settings:

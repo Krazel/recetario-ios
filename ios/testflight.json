@@ -2,7 +2,7 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.3",
+  "marketingVersion": "0.3.1",
   "buildNumber": "1",
   "lastKnownTestFlight": {
     "version": "0.3",
@@ -14,8 +14,8 @@
     "run": "42377684469"
   },
   "distributionAuthorization": {
-    "date": "2026-11-07",
-    "scope": "El titular ordena subir esta nueva version a TestFlight interno para probar iPhone sin cuentas; no App Review ni testers externos.",
+    "date": "2026-11-09",
+    "scope": "Correcciones del núcleo común autorizadas por el titular en el chat Android, coordinadas al propietario web/iOS; TestFlight interno vigente, sin App Review ni testers externos.",
     "physicalQA": "Pendiente: esta beta interna permite realizarla."
   }
 }
