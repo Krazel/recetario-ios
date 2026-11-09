@@ -2,12 +2,12 @@
 // Runs against the actual common UI in WKWebView. No provider requests are made.
 let stage='start';
 const wait = async predicate => {
-  for(let i=0;i<200;i++){if(predicate())return;await new Promise(r=>setTimeout(r,25));}
-  throw Error('UI timeout at '+stage+': '+document.body.innerText.slice(-1800));
+  for(let i=0;i<800;i++){if(predicate())return;await new Promise(r=>setTimeout(r,25));}
+  throw Error('UI timeout at '+stage+': '+JSON.stringify([...document.querySelectorAll('[data-slot=dialog-content]')].map(e=>({html:e.outerHTML.slice(-2400),rect:e.getBoundingClientRect().toJSON(),visibility:getComputedStyle(e).visibility})))+' '+document.body.innerText.slice(-1800));
 };
-const visible=e=>e.getClientRects().length>0;
+const visible=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden'&&!e.closest('[hidden],[inert],[data-closed]');
 const button=name=>[...document.querySelectorAll('button')].find(e=>{const label=(e.getAttribute('aria-label')||e.innerText).replace(/\s+/g,' ').trim();return visible(e)&&(label===name||label.startsWith(name+' '));});
-const tap=async name=>{stage='tap '+name;await wait(()=>button(name)&&!button(name).disabled);button(name).click();await new Promise(r=>setTimeout(r,100));};
+const tap=async name=>{stage='tap '+name;await wait(()=>button(name)&&!button(name).disabled);const target=button(name);target.scrollIntoView({block:'nearest'});target.click();await new Promise(r=>setTimeout(r,150));};
 const write=(selector,value)=>{const e=document.querySelector(selector);if(!e)throw Error('Missing input: '+selector);Object.getOwnPropertyDescriptor(e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(e,value);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));};
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const failNextSave=action=>{
@@ -40,14 +40,15 @@ check(document.querySelector('.pantry-card textarea').value.includes('300 g'),'P
 await tap('Guardar y volver');await wait(()=>button('Mis gustos'));
 await tap('Mi despensa');check(document.body.innerText.includes('arroz'),'Pantry not saved');await tap('Volver al perfil');
 await tap('Compartir enlaces');await wait(()=>document.querySelector('.share-guide'));noHorizontal('.share-guide-dialog');
+const guideBounds=document.querySelector('.share-guide-dialog').getBoundingClientRect();check(Math.abs(guideBounds.left)<2&&Math.abs(guideBounds.top)<2&&Math.abs(guideBounds.right-innerWidth)<2&&Math.abs(guideBounds.bottom-innerHeight)<2,'Guide is outside the viewport: '+JSON.stringify(guideBounds.toJSON()));
 check(document.querySelectorAll('.share-guide-steps>li').length===3,'Approved guide steps missing');
 const setup=document.querySelector('.share-guide-setup');check(!!setup,'iPhone shortcut setup missing');setup.open=true;await new Promise(r=>setTimeout(r,100));noHorizontal('.share-guide-dialog');
 await tap('Ir a Importar');await wait(()=>document.querySelector('.import-panel'));await tap('Cerrar importación');
 await tap('Compra');await wait(()=>document.querySelector('.cesta-page'));noHorizontal('.cesta-page');
 check(!document.querySelector('.cesta-people'),'People icon remains');check(!document.querySelector('.cesta-purchase-cover'),'Redundant empty purchase cover remains');
-write('input[aria-label="Añadir producto rápido"]','Leche');await tap('Preparar producto');await wait(()=>document.querySelector('.cesta-dialog'));
+const product='Leche QA '+innerWidth;write('input[aria-label="Añadir producto rápido"]',product);await tap('Preparar producto');await wait(()=>document.querySelector('.cesta-dialog form'));
 await tap('Añadir a mi compra');await wait(()=>!document.querySelector('.cesta-dialog'));
-check(document.body.innerText.includes('Leche'),'Manual shopping item missing');
+check(document.body.innerText.includes(product),'Manual shopping item missing');
 await tap('Mi menú');await wait(()=>document.querySelector('.planner'));
 const add=[...document.querySelectorAll('.add-meal,.daily-slot header button')].find(e=>visible(e)&&!e.disabled);
 check(!!add,'Missing meal action');add.click();await wait(()=>document.querySelector('.meal-compose-date'));

@@ -7,9 +7,9 @@
       "sha256": "42fd1828438cdbe5d6327e0f671df094cf79ff1932d36f145875bc4a3f07a8b6"
     },
     {
-      "path": "assets/index-CzCiNTpj.js",
-      "bytes": 656148,
-      "sha256": "733db3fbe22535469917cde910eb8fd42c67d698356377136b0afef0df6f8c4f"
+      "path": "assets/index-McXvKsWy.js",
+      "bytes": 656262,
+      "sha256": "69c48a0a91f8e81cef9eaf56cb74cf809141ddd5b1224fab5fd4b639f78bd6f9"
     },
     {
       "path": "images/design/pantry.png",
@@ -289,7 +289,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 466,
-      "sha256": "68d5dd9f36fe500c669d2fa3574112a594118f71a7eac3a846c6c71adacc6d20"
+      "sha256": "95bd3febb2b85ba25e9c8669b3efec418e63b7f190445d4f2016c1025282e411"
     }
   ]
 }
