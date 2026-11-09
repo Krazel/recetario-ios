@@ -1,12 +1,13 @@
 (async()=>{
 // Runs against the actual common UI in WKWebView. No provider requests are made.
+let stage='start';
 const wait = async predicate => {
   for(let i=0;i<200;i++){if(predicate())return;await new Promise(r=>setTimeout(r,25));}
-  throw Error('UI timeout: '+document.body.innerText.slice(-1800));
+  throw Error('UI timeout at '+stage+': '+document.body.innerText.slice(-1800));
 };
 const visible=e=>e.getClientRects().length>0;
-const button=name=>[...document.querySelectorAll('button')].find(e=>visible(e)&&(e.getAttribute('aria-label')||e.innerText).trim()===name);
-const tap=async name=>{await wait(()=>button(name)&&!button(name).disabled);button(name).click();await new Promise(r=>setTimeout(r,100));};
+const button=name=>[...document.querySelectorAll('button')].find(e=>{const label=(e.getAttribute('aria-label')||e.innerText).replace(/\s+/g,' ').trim();return visible(e)&&(label===name||label.startsWith(name+' '));});
+const tap=async name=>{stage='tap '+name;await wait(()=>button(name)&&!button(name).disabled);button(name).click();await new Promise(r=>setTimeout(r,100));};
 const write=(selector,value)=>{const e=document.querySelector(selector);if(!e)throw Error('Missing input: '+selector);Object.getOwnPropertyDescriptor(e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(e,value);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));};
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const failNextSave=action=>{
@@ -38,6 +39,10 @@ await tap('Volver al perfil');restoreFetch=failNextSave('kitchen');await tap('Gu
 check(document.querySelector('.pantry-card textarea').value.includes('300 g'),'Pantry lost after failed save');restoreFetch();
 await tap('Guardar y volver');await wait(()=>button('Mis gustos'));
 await tap('Mi despensa');check(document.body.innerText.includes('arroz'),'Pantry not saved');await tap('Volver al perfil');
+await tap('Compartir enlaces');await wait(()=>document.querySelector('.share-guide'));noHorizontal('.share-guide-dialog');
+check(document.querySelectorAll('.share-guide-steps>li').length===3,'Approved guide steps missing');
+const setup=document.querySelector('.share-guide-setup');check(!!setup,'iPhone shortcut setup missing');setup.open=true;await new Promise(r=>setTimeout(r,100));noHorizontal('.share-guide-dialog');
+await tap('Ir a Importar');await wait(()=>document.querySelector('.import-panel'));await tap('Cerrar importación');
 await tap('Compra');await wait(()=>document.querySelector('.cesta-page'));noHorizontal('.cesta-page');
 check(!document.querySelector('.cesta-people'),'People icon remains');check(!document.querySelector('.cesta-purchase-cover'),'Redundant empty purchase cover remains');
 write('input[aria-label="Añadir producto rápido"]','Leche');await tap('Preparar producto');await wait(()=>document.querySelector('.cesta-dialog'));

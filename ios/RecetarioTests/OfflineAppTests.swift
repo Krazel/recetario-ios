@@ -4,6 +4,22 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class OfflineAppTests: XCTestCase {
+    private func logSnapshot(_ web: WKWebView, name: String) async throws {
+        let image: UIImage = try await withCheckedThrowingContinuation { continuation in
+            web.takeSnapshot(with: nil) { image, error in
+                if let image { continuation.resume(returning: image) }
+                else { continuation.resume(throwing: error ?? NSError(domain: "RecetarioQASnapshot", code: 1)) }
+            }
+        }
+        let encoded = try XCTUnwrap(image.pngData()).base64EncodedString()
+        print("RECETARIO_QA_PNG_BEGIN=\(name):\(encoded.count)")
+        for offset in stride(from: 0, to: encoded.count, by: 4096) {
+            let start = encoded.index(encoded.startIndex, offsetBy: offset)
+            let end = encoded.index(start, offsetBy: min(4096, encoded.count - offset))
+            print("RECETARIO_QA_PNG_CHUNK=\(name):\(offset / 4096):\(encoded[start..<end])")
+        }
+        print("RECETARIO_QA_PNG_END=\(name)")
+    }
     func testSharedDescriptionSurvivesColdStartAndQueuedWarmImport() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -12,7 +28,7 @@ import WebKit
         controller.openImportSource(URL(string: "https://youtu.be/cold-start")!, text: caption)
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = controller; window.makeKeyAndVisible(); controller.loadViewIfNeeded()
-        defer { window.isHidden = true; try? FileManager.default.removeItem(at: folder) }
+        defer { window.isHidden = true }
         let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
         for _ in 0..<240 {
             if (try? await web.evaluateJavaScript("window.__recetarioImportReady === 1")) as? Bool == true { break }
@@ -47,7 +63,7 @@ import WebKit
             window.rootViewController = controller; window.makeKeyAndVisible()
             controller.loadViewIfNeeded(); controller.view.frame = CGRect(origin: .zero, size: size)
             controller.view.setNeedsLayout(); controller.view.layoutIfNeeded()
-            defer { window.isHidden = true; try? FileManager.default.removeItem(at: folder) }
+            defer { window.isHidden = true }
             let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
             for _ in 0..<240 {
                 if (try? await web.evaluateJavaScript("typeof window.__recetarioExport === 'function'")) as? Bool == true { break }
@@ -60,6 +76,20 @@ import WebKit
             XCTAssertEqual(result?["editor"] as? String, "contained")
             XCTAssertEqual(result?["preferences"] as? String, "closed on save")
             XCTAssertEqual(result?["width"] as? Int, Int(size.width))
+            if size.width == 320 {
+                let guide = """
+                document.querySelector('.import-heading button').click();await new Promise(r=>setTimeout(r,100));
+                [...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Perfil').click();await new Promise(r=>setTimeout(r,100));
+                [...document.querySelectorAll('button')].find(b=>b.innerText.trim().startsWith('Compartir enlaces')).click();
+                for(let i=0;i<200;i++){if(document.querySelector('.share-guide-dialog'))break;await new Promise(r=>setTimeout(r,25));}
+                await new Promise(r=>setTimeout(r,150));return true;
+                """
+                _ = try await web.callAsyncJavaScript(guide, arguments: [:], in: nil, contentWorld: .page)
+                try await logSnapshot(web, name: "guide-320-top")
+                _ = try await web.evaluateJavaScript("document.querySelector('.share-guide-dialog').scrollTop=9999")
+                try await Task.sleep(nanoseconds: 150_000_000)
+                try await logSnapshot(web, name: "guide-320-bottom")
+            }
         }
     }
     func testBundledAppStartsAndPersistsARecipeThroughTheNativeBridge() async throws {
