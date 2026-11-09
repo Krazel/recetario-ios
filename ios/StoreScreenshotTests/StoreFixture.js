@@ -4,6 +4,8 @@ const wait=async predicate=>{for(let i=0;i<800;i++){if(predicate())return;await 
 const visible=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden'&&!e.closest('[hidden],[inert],[data-closed]');
 window.__storeWait=wait;
 window.__storeTap=async name=>{let target;await wait(()=>{target=[...document.querySelectorAll('button')].find(e=>{const label=(e.getAttribute('aria-label')||e.innerText).replace(/\s+/g,' ').trim();return visible(e)&&(label===name||label.startsWith(name+' '));});return target&&!target.disabled;});target.scrollIntoView({block:'nearest'});target.click();await new Promise(r=>setTimeout(r,500));};
+// Wait for the real book's initial load before seeding its database.
+await wait(()=>document.querySelector('.empty-state,.recipe-card'));
 const post=async body=>{const r=await fetch('/api/recetario',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const value=await r.json();if(!r.ok)throw Error(value.error);return value;};
 const {books}=await post({action:'bootstrap'}),bookId=books[0].id;
 const recipes=[
@@ -17,6 +19,9 @@ let s=await snapshot();await post({action:'kitchen',bookId,revision:s.kitchen.re
 s=await snapshot();const today=new Date(),date=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),monday=new Date(today);monday.setDate(today.getDate()-((today.getDay()+6)%7));
 await post({action:'workspace',bookId,kitchenRevision:s.kitchen.revision,workspace:{...s.workspace,shoppingWeek:date(monday),subtractPantry:false,meals:[{id:crypto.randomUUID(),date:date(today),slot:'Comida',recipeId:ids[2],servings:2,note:''},{id:crypto.randomUUID(),date:date(today),slot:'Cena',recipeId:ids[1],servings:2,note:''}]}});
 window.dispatchEvent(new Event('recetario-local-restored'));
+// A restore keeps the same book ID. Returning to the app refreshes that book;
+// bootstrap alone only refreshes the list of books.
+window.dispatchEvent(new Event('focus'));
 await wait(()=>[...document.querySelectorAll('.recipe-card')].some(e=>e.innerText.includes(recipes[2].title)));
 await document.fonts.ready;await new Promise(r=>setTimeout(r,800));
 return {bookId,recipes:recipes.map(r=>r.title),source:'own demo recipe text; approved built-in art:pasta/soup/omelette; no AI requests'};
