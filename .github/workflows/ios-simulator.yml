@@ -1,6 +1,12 @@
 name: iOS simulator (manual, public standard runner)
 on:
   workflow_dispatch:
+    inputs:
+      test_scope:
+        description: Test suite
+        type: choice
+        options: [all, webview]
+        default: all
 permissions:
   contents: read
 concurrency:
@@ -10,12 +16,14 @@ jobs:
   build:
     if: github.event.repository.private == false
     runs-on: macos-26-intel
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Compile and test simulator
+        env:
+          RECETARIO_TEST_SCOPE: ${{ inputs.test_scope }}
         run: bash ios/build-simulator.sh
       - name: Record build identity
         run: |
