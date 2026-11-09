@@ -1,0 +1,26 @@
+name: iOS actual store screenshots (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recetario-store-screenshots
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: github.event.repository.private == false
+    runs-on: macos-26-intel
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [iphone, ipad]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Capture actual native screens
+        env:
+          RECETARIO_STORE_DEVICE: ${{ matrix.device }}
+        run: bash ios/build-store-screenshots.sh
+      # Capture bytes are in logs; no paid artifacts/cache storage, signing or upload.

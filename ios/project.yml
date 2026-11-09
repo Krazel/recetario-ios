@@ -52,3 +52,24 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+  StoreScreenshotTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: StoreScreenshotTests
+        excludes: [StoreFixture.js]
+      - path: StoreScreenshotTests/StoreFixture.js
+        buildPhase: resources
+    dependencies:
+      - target: Recetario
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  RecetarioStoreScreenshots:
+    build:
+      targets:
+        Recetario: all
+        StoreScreenshotTests: [test]
+    test:
+      targets: [StoreScreenshotTests]
