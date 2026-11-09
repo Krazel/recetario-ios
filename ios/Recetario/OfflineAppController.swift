@@ -14,6 +14,8 @@ import AVFoundation
     private let timers = DeviceTimers()
     private let speech = AVSpeechSynthesizer()
     private var pendingSource: URL?
+    private var pendingText = ""
+    private var importReady = false
     private var cooking = false
     init(database: DeviceDatabase) throws {
         self.database = database
@@ -46,16 +48,17 @@ import AVFoundation
         loadApp()
     }
     private func loadApp() {
+        importReady = false
         var url = URLComponents(string: "recetario-local://bundle/mobile/index.html")!
-        if let pendingSource { url.queryItems = [URLQueryItem(name: "url", value: pendingSource.absoluteString)] }
-        webView.load(URLRequest(url: url.url!)); pendingSource = nil
+        if let pendingSource { url.queryItems = [URLQueryItem(name: "url", value: pendingSource.absoluteString), URLQueryItem(name: "text", value: pendingText)] }
+        webView.load(URLRequest(url: url.url!)); pendingSource = nil; pendingText = ""
     }
-    func openImportSource(_ source: URL) {
-        pendingSource = source
-        guard isViewLoaded else { return }
+    func openImportSource(_ source: URL, text: String = "") {
+        pendingSource = source; pendingText = text
+        guard isViewLoaded, importReady else { return }
         // Avoid reloading or losing a currently open editor.
-        webView.callAsyncJavaScript("window.dispatchEvent(new CustomEvent('recetario-native-import',{detail:source}));", arguments: ["source": source.absoluteString], in: nil, in: .page) { _ in }
-        pendingSource = nil
+        webView.callAsyncJavaScript("window.dispatchEvent(new CustomEvent('recetario-native-import',{detail:{url:source,text:caption}}));", arguments: ["source": source.absoluteString, "caption": text], in: nil, in: .page) { _ in }
+        pendingSource = nil; pendingText = ""
     }
     @objc private func background() { UIApplication.shared.isIdleTimerDisabled = false; speech.stopSpeaking(at: .immediate) }
     @objc private func foreground() { UIApplication.shared.isIdleTimerDisabled = cooking }
@@ -200,7 +203,20 @@ import AVFoundation
         let alert = UIAlertController(title: "Recetario", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Aceptar", style: .default)); present(alert, animated: true)
     }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { view.backgroundColor = LocalRecipeStyle.background }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        view.backgroundColor = LocalRecipeStyle.background
+        Task { [weak self] in
+            guard let self else { return }
+            for _ in 0..<240 {
+                if (try? await webView.evaluateJavaScript("window.__recetarioImportReady === 1")) as? Bool == true {
+                    self.importReady = true
+                    if let source = self.pendingSource { self.openImportSource(source, text: self.pendingText) }
+                    return
+                }
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+        }
+    }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { inform("La vista se ha cerrado. Tus recetas guardadas se conservan. Abre de nuevo la app.") }
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = action.request.url else { decisionHandler(.cancel); return }

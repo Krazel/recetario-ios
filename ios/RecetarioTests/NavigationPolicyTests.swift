@@ -1,6 +1,19 @@
 import XCTest
 @testable import Recetario
 final class NavigationPolicyTests: XCTestCase {
+    func testShortcutsAcceptPlainLinksAndSharedTextFromSeveralApps() {
+        for raw in ["https://youtu.be/abc", "https://www.tiktok.com/@author/video/123", "https://www.instagram.com/reel/abc/", "Mira esta receta: https://www.bonviveur.es/recetas/arroz"] {
+            var incoming = URLComponents(string: "krazel-recetario://import")!
+            incoming.queryItems = [URLQueryItem(name: "url", value: raw)]
+            XCTAssertNotNil(NavigationPolicy.importSourceURL(incoming.url!))
+            if raw.hasPrefix("Mira") { XCTAssertEqual(NavigationPolicy.importSourceText(incoming.url!), raw) }
+        }
+        var invalid = URLComponents(string: "krazel-recetario://import")!
+        invalid.queryItems = [URLQueryItem(name: "url", value: "Solo un texto sin enlace")]
+        XCTAssertNil(NavigationPolicy.importSourceURL(invalid.url!))
+        invalid.queryItems = [URLQueryItem(name: "url", value: "https://user:password@example.com")]
+        XCTAssertNil(NavigationPolicy.importSourceURL(invalid.url!))
+    }
     func testTrustedOrigin() {
         XCTAssertTrue(NavigationPolicy.isTrusted(URL(string: "https://recetario-krazel.krazel.chatgpt.site/importar")))
         for raw in ["http://recetario-krazel.krazel.chatgpt.site", "https://recetario-krazel.krazel.chatgpt.site.evil.test", "https://user:pass@recetario-krazel.krazel.chatgpt.site", "https://recetario-krazel.krazel.chatgpt.site:8000"] { XCTAssertFalse(NavigationPolicy.isTrusted(URL(string: raw))) }

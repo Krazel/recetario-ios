@@ -4,6 +4,39 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class OfflineAppTests: XCTestCase {
+    func testSharedDescriptionSurvivesColdStartAndQueuedWarmImport() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let controller = try OfflineAppController(database: DeviceDatabase(file: folder.appendingPathComponent("shared.sqlite")))
+        let caption = "Ingredientes:\n2 huevos\nPreparación:\nBatir."
+        controller.openImportSource(URL(string: "https://youtu.be/cold-start")!, text: caption)
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = controller; window.makeKeyAndVisible(); controller.loadViewIfNeeded()
+        defer { window.isHidden = true; try? FileManager.default.removeItem(at: folder) }
+        let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
+        for _ in 0..<240 {
+            if (try? await web.evaluateJavaScript("window.__recetarioImportReady === 1")) as? Bool == true { break }
+            try await Task.sleep(nanoseconds: 250_000_000)
+        }
+        let checkCold = """
+        for(let i=0;i<200;i++){if(document.querySelector('.import-panel textarea[aria-label="Descripción de la publicación"]'))break;await new Promise(r=>setTimeout(r,25));}
+        return {text:document.querySelector('.import-panel textarea')?.value,url:document.querySelector('.import-panel input[type=url]')?.value};
+        """
+        let cold = try await web.callAsyncJavaScript(checkCold, arguments: [:], in: nil, contentWorld: .page) as? [String: Any]
+        XCTAssertEqual(cold?["text"] as? String, caption)
+        XCTAssertEqual(cold?["url"] as? String, "https://youtu.be/cold-start")
+        controller.openImportSource(URL(string: "https://www.tiktok.com/@author/video/123")!, text: "Descripción compartida de prueba")
+        let checkWarm = """
+        for(let i=0;i<200;i++){if([...document.querySelectorAll('button')].some(b=>b.textContent==='Abrir siguiente enlace'))break;await new Promise(r=>setTimeout(r,25));}
+        if(document.querySelector('.import-panel textarea')?.value!==caption)throw Error('La recepción cambió el formulario abierto');
+        document.querySelector('.import-heading button').click();await new Promise(r=>setTimeout(r,100));
+        [...document.querySelectorAll('button')].find(b=>b.textContent==='Abrir siguiente enlace').click();await new Promise(r=>setTimeout(r,100));
+        return {text:document.querySelector('.import-panel textarea')?.value,url:document.querySelector('.import-panel input[type=url]')?.value};
+        """
+        let warm = try await web.callAsyncJavaScript(checkWarm, arguments: ["caption":caption], in: nil, contentWorld: .page) as? [String: Any]
+        XCTAssertEqual(warm?["text"] as? String, "Descripción compartida de prueba")
+        XCTAssertEqual(warm?["url"] as? String, "https://www.tiktok.com/@author/video/123")
+    }
     func testCorrectionFlowsAndLayoutInRealWebView() async throws {
         for size in [CGSize(width: 320, height: 740), CGSize(width: 390, height: 400), CGSize(width: 430, height: 900)] {
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)

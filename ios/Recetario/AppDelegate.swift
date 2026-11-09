@@ -16,12 +16,12 @@ import UIKit
         }
         window.makeKeyAndVisible()
         self.window = window
-        if let url=launchOptions?[.url] as? URL,let source=NavigationPolicy.importSourceURL(url){DispatchQueue.main.async{[weak self] in self?.root?.openImportSource(source)}}
+        if let url=launchOptions?[.url] as? URL,let source=NavigationPolicy.importSourceURL(url){DispatchQueue.main.async{[weak self] in self?.root?.openImportSource(source, text: NavigationPolicy.importSourceText(url))}}
         return true
     }
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         guard let source = NavigationPolicy.importSourceURL(url) else { return false }
-        root?.openImportSource(source)
+        root?.openImportSource(source, text: NavigationPolicy.importSourceText(url))
         return true
     }
 }
