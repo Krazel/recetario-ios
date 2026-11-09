@@ -1,10 +1,16 @@
 name: iOS actual store screenshots (manual)
 on:
   workflow_dispatch:
+    inputs:
+      device:
+        description: Native screenshot device
+        type: choice
+        options: [all, iphone, iphone-medium, ipad]
+        default: all
 permissions:
   contents: read
 concurrency:
-  group: recetario-store-screenshots
+  group: recetario-store-screenshots-${{ inputs.device || 'all' }}
   cancel-in-progress: false
 jobs:
   capture:
@@ -14,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: [iphone, ipad]
+        device: ${{ fromJSON(inputs.device == 'all' && '["iphone","iphone-medium","ipad"]' || format('["{0}"]', inputs.device)) }}
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen

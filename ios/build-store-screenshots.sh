@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")"
-case "${RECETARIO_STORE_DEVICE:-}" in iphone|ipad) ;; *) echo 'Choose iphone or ipad'; exit 1;; esac
+case "${RECETARIO_STORE_DEVICE:-}" in iphone|iphone-medium|ipad) ;; *) echo 'Choose iphone, iphone-medium or ipad'; exit 1;; esac
 export RECETARIO_SDK_MAJOR=$(xcrun --sdk iphonesimulator --show-sdk-version | cut -d. -f1)
 xcrun simctl list devices available --json > /tmp/recetario-store-devices.json
 DEVICE_ID=$(python3 - <<'PY'
@@ -9,7 +9,10 @@ import json, os
 family=os.environ['RECETARIO_STORE_DEVICE']
 data=json.load(open('/tmp/recetario-store-devices.json'))
 choices=[d for runtime, devices in data['devices'].items() if 'iOS-'+os.environ['RECETARIO_SDK_MAJOR']+'-' in runtime for d in devices]
-valid=lambda d: ('iPhone' in d['name'] and 'Pro Max' in d['name']) if family=='iphone' else ('iPad' in d['name'] and ('13-inch' in d['name'] or '12.9-inch' in d['name']))
+def valid(d):
+    if family=='iphone': return 'iPhone' in d['name'] and 'Pro Max' in d['name']
+    if family=='iphone-medium': return 'iPhone' in d['name'] and d['name'].endswith(' Pro')
+    return 'iPad' in d['name'] and ('13-inch' in d['name'] or '12.9-inch' in d['name'])
 selected=next(d for d in choices if valid(d))
 print(selected['udid'])
 PY

@@ -4,7 +4,7 @@ import base64, hashlib, json, os, pathlib, re, struct, subprocess, sys, time
 mode, device, family, output = sys.argv[1:]
 out = pathlib.Path(output).resolve()
 out.mkdir(parents=True, exist_ok=True)
-accepted = {'iphone': {(1320, 2868), (1290, 2796), (1260, 2736)}, 'ipad': {(2064, 2752), (2048, 2732)}}
+accepted = {'iphone': {(1320, 2868), (1290, 2796), (1260, 2736)}, 'iphone-medium': {(1179, 2556), (1206, 2622)}, 'ipad': {(2064, 2752), (2048, 2732)}}
 names = ['01-recetas', '02-receta', '03-cocinar', '04-menu', '05-compra', '06-despensa']
 if family not in accepted:
     raise ValueError('Unknown device family')
