@@ -19,6 +19,8 @@ let backup=await window.__recetarioExport();
 if(!backup.books.flatMap(b=>b.recipes).some(r=>r.title==='Original conservado'))await post({action:'save',bookId:book,recipe:{title:'Original conservado',url:'https://example.com/original',category:'Sin clasificar',ingredients:'200 g de arroz\n2 tomates',steps:'Cocer 10 minutos.\nServir.',notes:'Notas del autor. No traducir.',minutes:10,favorite:0,servings:2,tags:'',provenance:'Fuente original',photo:'art:pasta'}});
 const original=(await window.__recetarioExport()).books.flatMap(b=>b.recipes).find(r=>r.title==='Original conservado');
 await click('.bottom-nav button:first-child');await wait(()=>document.querySelector('.library-toolbar'),'library');contained('.library-toolbar');
+if(![...document.querySelector('.category-filter').options].some(option=>option.value==='Sin clasificar'))throw Error('Localized category changed its stored value');
+set('.category-filter','Sin clasificar');await wait(()=>document.querySelector('.recipe-card'),'canonical category filter');set('.category-filter','Todas');
 for(const image of document.querySelectorAll('.recisave-lockup img'))await wait(()=>image.complete&&image.naturalWidth>0,'A4 image');
 if(document.querySelectorAll('.masthead img[alt="ReciSave"]').length!==1)throw Error('Missing or duplicated wordmark');
 const iconBox=document.querySelector('.masthead .recisave-icon').getBoundingClientRect(),wordBox=document.querySelector('.masthead .recisave-wordmark').getBoundingClientRect();
@@ -37,7 +39,11 @@ document.querySelector('.recipe-editor form').dispatchEvent(new Event('submit',{
 await wait(()=>!document.querySelector('.recipe-editor'),'save recipe');
 backup=await window.__recetarioExport();const saved=backup.books.flatMap(b=>b.recipes).find(r=>r.title===title);
 if(!saved||saved.language!==override||saved.ingredients!=='200 g de arroz\n2 tomates'||saved.steps!=='Cocer 10 minutos.\nServir.')throw Error('Recipe override or manual text lost');
-if(JSON.stringify(backup.books.flatMap(b=>b.recipes).find(r=>r.id===original.id))!==JSON.stringify(original))throw Error('Existing recipe changed with interface language');
+const afterOriginal=backup.books.flatMap(b=>b.recipes).find(r=>r.id===original.id);
+if(!afterOriginal)throw Error('Existing recipe disappeared');
+// The native bridge serializes Swift dictionaries: key order is not data.
+const changed=Object.keys({...original,...afterOriginal}).filter(key=>JSON.stringify(original[key])!==JSON.stringify(afterOriginal[key]));
+if(changed.length)throw Error('Existing recipe fields changed with interface language: '+JSON.stringify(changed.map(key=>({key,before:original[key],after:afterOriginal[key]}))));
 if(window.__recetarioLanguage.get()!==code)throw Error('Recipe language changed app language');
 await click('.add-recipe-button');await click('.add-menu button:first-child');await wait(()=>document.querySelector('.import-panel'),'import');
 if(document.querySelector('.import-panel .recipe-language select').value!==code)throw Error('Import language default wrong');contained('.import-panel');
