@@ -19,7 +19,8 @@ const noHorizontal=selector=>{const e=document.querySelector(selector);check(!!e
 await wait(()=>button('Añadir receta'));
 await wait(()=>document.querySelector('.empty-state,.recipe-card'));noHorizontal('.library-toolbar');
 const sortControl=document.querySelector('select[aria-label="Ordenar recetas"]'),sortFont=getComputedStyle(sortControl),metrics=document.createElement('canvas').getContext('2d');metrics.font=sortFont.font;
-check(sortControl.clientWidth>=metrics.measureText('Menor tiempo').width+32,'Sort option is clipped by the native control');
+const sortRequiredWidth=metrics.measureText('Menor tiempo').width+32;
+check(sortControl.clientWidth>=sortRequiredWidth,'Sort option is clipped by the native control '+JSON.stringify({viewport:innerWidth,actual:sortControl.clientWidth,required:sortRequiredWidth,font:sortFont.font}));
 await tap('Añadir receta');await tap('Escribir mi receta');await wait(()=>document.querySelector('.recipe-editor'));
 noHorizontal('.recipe-editor');noHorizontal('.approved-recipe-editor');
 write('.recipe-editor input[required]','Receta de correcciones');

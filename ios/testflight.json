@@ -5,18 +5,18 @@
   "marketingVersion": "0.4.1",
   "buildNumber": "1",
   "lastKnownTestFlight": {
-    "version": "0.3.1",
-    "build": "3",
+    "version": "0.4",
+    "build": "1",
     "audience": "internal",
-    "date": "2026-11-09",
+    "date": "2026-11-10",
     "state": "IN_BETA_TESTING",
-    "buildId": "5b442430-b2e0-4b30-a741-3eda3ac00982",
-    "run": "42550342540"
+    "buildId": "6f8edf60-ffe4-4055-80aa-f8071d2984a7",
+    "run": "42729824377"
   },
   "distributionAuthorization": {
     "date": "2026-11-10",
     "scope": "Completar Recetario y sus correcciones de privacidad; TestFlight interno autorizado previamente para QA física. Nuevo flujo implica beta0.4(1); no AppReview, externos ni aprobación de primera versión pública1.0.",
     "physicalQA": "Pendiente: esta beta interna permite realizarla."
   },
-  "commonBundleManifestSHA256": "f0fdc158f2526c5e65497974b090fbd480f6546b39ba9a5b870f7570153211f9"
+  "commonBundleManifestSHA256": "5902107b7056ea2061dc39743927439b0da3d4579717041520affbd065ddf76c"
 }
