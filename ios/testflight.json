@@ -5,13 +5,13 @@
   "marketingVersion": "0.4.1",
   "buildNumber": "1",
   "lastKnownTestFlight": {
-    "version": "0.4",
+    "version": "0.4.1",
     "build": "1",
     "audience": "internal",
     "date": "2026-11-10",
     "state": "IN_BETA_TESTING",
-    "buildId": "6f8edf60-ffe4-4055-80aa-f8071d2984a7",
-    "run": "42729824377"
+    "buildId": "28931de9-7db7-4382-b558-1197a8466c40",
+    "run": "42737004432"
   },
   "distributionAuthorization": {
     "date": "2026-11-10",
