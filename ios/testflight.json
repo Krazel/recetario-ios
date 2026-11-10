@@ -2,7 +2,7 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.4.1",
+  "marketingVersion": "0.5",
   "buildNumber": "1",
   "lastKnownTestFlight": {
     "version": "0.4.1",
@@ -15,8 +15,8 @@
   },
   "distributionAuthorization": {
     "date": "2026-11-10",
-    "scope": "Completar Recetario y sus correcciones de privacidad; TestFlight interno autorizado previamente para QA física. Nuevo flujo implica beta0.4(1); no AppReview, externos ni aprobación de primera versión pública1.0.",
-    "physicalQA": "Pendiente: esta beta interna permite realizarla."
+    "scope": "Human instruction: complete7languages and definitive ReciSave A4; private web and existing internal TestFlight authorized. No externalbeta/AppReview/publicstore/costs/services.",
+    "physicalQA": "Pending; actual internal beta enables user testing."
   },
-  "commonBundleManifestSHA256": "5902107b7056ea2061dc39743927439b0da3d4579717041520affbd065ddf76c"
+  "commonBundleManifestSHA256": "7289b6e60675f0ecf2345a1ddc0e464e52d518180c5a3f67f9d4dd596c030d93"
 }

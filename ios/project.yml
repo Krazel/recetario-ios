@@ -6,9 +6,9 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.4.1'
+    MARKETING_VERSION: '0.5'
     CURRENT_PROJECT_VERSION: 1
-    DEVELOPMENT_LANGUAGE: es
+    DEVELOPMENT_LANGUAGE: en
     CODE_SIGN_STYLE: Automatic
 targets:
   Recetario:
@@ -44,8 +44,10 @@ targets:
     platform: iOS
     sources:
       - path: RecetarioTests
-        excludes: [CorrectionFlow.js]
+        excludes: [CorrectionFlow.js, LocalizationFlow.js]
       - path: RecetarioTests/CorrectionFlow.js
+        buildPhase: resources
+      - path: RecetarioTests/LocalizationFlow.js
         buildPhase: resources
     dependencies:
       - target: Recetario

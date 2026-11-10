@@ -23,7 +23,9 @@ import WebKit
     func testSharedDescriptionSurvivesColdStartAndQueuedWarmImport() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let controller = try OfflineAppController(database: DeviceDatabase(file: folder.appendingPathComponent("shared.sqlite")))
+        let database = try DeviceDatabase(file: folder.appendingPathComponent("shared.sqlite"))
+        try await database.writeKey("recetario:language", value: "es")
+        let controller = try OfflineAppController(database: database)
         let caption = "Ingredientes:\n2 huevos\nPreparación:\nBatir."
         controller.openImportSource(URL(string: "https://youtu.be/cold-start")!, text: caption)
         let window = UIWindow(frame: UIScreen.main.bounds)
@@ -58,6 +60,7 @@ import WebKit
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             let database = try DeviceDatabase(file: folder.appendingPathComponent("corrections.sqlite"))
+            try await database.writeKey("recetario:language", value: "es")
             let controller = try OfflineAppController(database: database)
             let window = UIWindow(frame: CGRect(origin: .zero, size: size))
             window.rootViewController = controller; window.makeKeyAndVisible()
@@ -109,6 +112,7 @@ import WebKit
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: folder) }
         let database = try DeviceDatabase(file: folder.appendingPathComponent("app.sqlite"))
+            try await database.writeKey("recetario:language", value: "es")
         let controller = try OfflineAppController(database: database)
         // The app uses AppDelegate windows rather than a scene manifest.
         let window = UIWindow(frame: UIScreen.main.bounds)

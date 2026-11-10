@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-<key>CFBundleDisplayName</key><string>Recetario</string>
+<key>CFBundleDisplayName</key><string>ReciSave</string>
+<key>CFBundleLocalizations</key><array><string>en</string><string>es</string><string>ca</string><string>de</string><string>fr</string><string>it</string><string>pt</string></array>
 <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
 <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>$(MARKETING_VERSION)</string>
 <key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
-<key>CFBundleDevelopmentRegion</key><string>es</string>
-<key>UILaunchScreen</key><dict/>
+<key>CFBundleDevelopmentRegion</key><string>en</string>
+<key>UILaunchScreen</key><dict><key>UIColorName</key><string>LaunchBackground</string><key>UIImageName</key><string>LaunchLogo</string><key>UIImageRespectsSafeAreaInsets</key><true/></dict>
 <key>ITSAppUsesNonExemptEncryption</key><false/>
 <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>

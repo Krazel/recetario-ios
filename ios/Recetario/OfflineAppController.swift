@@ -17,6 +17,9 @@ import AVFoundation
     private var pendingText = ""
     private var importReady = false
     private var cooking = false
+    private var interfacePreference = "system"
+    private var interfaceLanguage: String { NativeLocalization.effective(interfacePreference) }
+    private func localized(_ value: String, values: [String: String] = [:]) -> String { NativeLocalization.text(value, language: interfaceLanguage, values: values) }
     init(database: DeviceDatabase) throws {
         self.database = database
         guard let directory = Bundle.main.url(forResource: "OfflineApp", withExtension: nil) else { throw LocalRecipeError.invalid("Faltan los archivos de la app. Conserva tus datos y actualiza la instalación.") }
@@ -61,13 +64,13 @@ import AVFoundation
         pendingSource = nil; pendingText = ""
     }
     @objc private func background() { UIApplication.shared.isIdleTimerDisabled = false; speech.stopSpeaking(at: .immediate) }
-    @objc private func foreground() { UIApplication.shared.isIdleTimerDisabled = cooking }
+    @objc private func foreground() { UIApplication.shared.isIdleTimerDisabled = cooking; webView?.callAsyncJavaScript("window.__recetarioLanguage?.system(preferred);", arguments: ["preferred": Locale.preferredLanguages], in: nil, in: .page) { _ in } }
     private func trusted(_ url: URL?) -> Bool { url?.scheme == "recetario-local" && url?.host == "bundle" && ["/", "/mobile/index.html"].contains(url?.path ?? "") }
     func receive(_ message: WKScriptMessage, reply: @escaping (Any?, String?) -> Void) {
         guard message.frameInfo.isMainFrame, trusted(message.frameInfo.request.url), trusted(webView.url), let body = message.body as? [String: Any], let action = body["action"] as? String else { reply(nil, "Origen no permitido."); return }
         Task {
             do { let value = try await perform(action, body); reply(["ok": true, "value": value], nil) }
-            catch { reply(["ok": false, "error": error.localizedDescription], nil) }
+            catch { reply(["ok": false, "error": localized(error.localizedDescription)], nil) }
         }
     }
     private func perform(_ action: String, _ body: [String: Any]) async throws -> Any {
@@ -75,10 +78,12 @@ import AVFoundation
         case "sql":
             guard let statements = body["statements"] as? [[String: Any]] else { throw LocalRecipeError.invalid("Faltan los datos locales.") }
             return try await database.execute(statements)
-        case "kv-read": return try await database.keyValues()
+        case "system-languages": return Locale.preferredLanguages
+        case "kv-read":
+            let values = try await database.keyValues(); interfacePreference = values[NativeLocalization.preferenceKey] ?? "system"; return values
         case "kv-write":
             guard let key = body["key"] as? String else { throw LocalRecipeError.invalid("No se puede guardar el borrador.") }
-            try await database.writeKey(key, value: body["value"] as? String); return true
+            try await database.writeKey(key, value: body["value"] as? String); if key == NativeLocalization.preferenceKey { interfacePreference = body["value"] as? String ?? "system" }; return true
         case "hash":
             guard let raw = body["bytes"] as? String, let bytes = Data(base64Encoded: raw), bytes.count < 16_000_000 else { throw LocalRecipeError.invalid("Los datos son demasiado grandes.") }
             return Data(SHA256.hash(data: bytes)).base64EncodedString()
@@ -108,18 +113,19 @@ import AVFoundation
             return true
         case "timers":
             guard let id = body["id"] as? String, let title = body["title"] as? String, let values = body["timers"] as? [String: Any] else { throw LocalRecipeError.invalid("Faltan los temporizadores.") }
-            try await timers.update(id: id, title: title, timers: values); return true
+            try await timers.update(id: id, title: title, timers: values, language: interfaceLanguage); return true
         case "speak":
             speech.stopSpeaking(at: .immediate)
             if let text = body["text"] as? String, !text.isEmpty, text.utf8.count <= 24000 {
-                let utterance = AVSpeechUtterance(string: text); utterance.voice = AVSpeechSynthesisVoice(language: "es-ES"); speech.speak(utterance)
+                let language = NativeLocalization.effective(body["language"] as? String, preferred: [interfaceLanguage])
+                let utterance = AVSpeechUtterance(string: text); utterance.voice = AVSpeechSynthesisVoice(language: NativeLocalization.voiceLocale(language)); speech.speak(utterance)
             }
             return true
         case "backup-export": try await exportBackup(); return true
         case "export-json":
             guard let data = body["data"], JSONSerialization.isValidJSONObject(data), presentedViewController == nil else { throw LocalRecipeError.invalid("No se pudo preparar la exportación.") }
             let bytes = try JSONSerialization.data(withJSONObject: data)
-            try exportJSON(bytes, name: "Recetario-recetas.json"); return true
+            try exportJSON(bytes, name: "ReciSave-recipes.json"); return true
         case "print":
             guard presentedViewController == nil else { throw LocalRecipeError.invalid("Cierra la ventana actual antes de imprimir.") }
             let controller = UIPrintInteractionController.shared
@@ -144,12 +150,17 @@ import AVFoundation
         }
     }
     private func recognize(_ images: [String]) async throws -> String {
-        try await Task.detached(priority: .userInitiated) {
+        let preferred = interfaceLanguage
+        return try await Task.detached(priority: .userInitiated) {
             var result: [String] = []
             for raw in images {
                 guard let bytes = Data(base64Encoded: raw), bytes.count <= 4_000_000 else { throw LocalRecipeError.invalid("Imagen no válida.") }
                 let request = VNRecognizeTextRequest()
-                request.recognitionLevel = .accurate; request.recognitionLanguages = ["es-ES", "en-US"]; request.usesLanguageCorrection = true
+                request.recognitionLevel = .accurate
+                let supported = try request.supportedRecognitionLanguages()
+                let order = [preferred] + NativeLocalization.languages.filter { $0 != preferred }
+                request.recognitionLanguages = order.compactMap { code in supported.first { $0.lowercased().split(separator: "-").first.map(String.init) == code } }
+                request.automaticallyDetectsLanguage = true; request.usesLanguageCorrection = true
                 try VNImageRequestHandler(data: bytes, options: [:]).perform([request])
                 result.append((request.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n"))
             }
@@ -169,7 +180,7 @@ import AVFoundation
         guard let value, JSONSerialization.isValidJSONObject(value) else { throw LocalRecipeError.invalid("No se pudo preparar la copia completa.") }
         let bytes = try JSONSerialization.data(withJSONObject: value, options: [.sortedKeys])
         guard bytes.count <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
-        try exportJSON(bytes, name: "Recetario-copia-completa.json")
+        try exportJSON(bytes, name: "ReciSave-backup.json")
     }
     private func exportJSON(_ bytes: Data, name: String) throws {
         guard bytes.count <= LocalRecipeStore.maximumBackupBytes else { throw LocalRecipeError.invalid("La copia supera los 128 MB admitidos.") }
@@ -188,10 +199,10 @@ import AVFoundation
                 let value = try JSONSerialization.jsonObject(with: Data(contentsOf: file))
                 let summary = try await webView.callAsyncJavaScript("return await window.__recetarioInspect(value);", arguments: ["value": value], in: nil, contentWorld: .page) as? [String: Any]
                 let count = summary?["recipes"] as? Int ?? 0
-                let alert = UIAlertController(title: "Importar \(count) recetas", message: "Se añadirán como espacios nuevos, con su menú, despensa, compra y fotos. Tus datos actuales se conservan.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
+                let alert = UIAlertController(title: localized("Importar {count} recetas", values: ["count": String(count)]), message: localized("Se añadirán como espacios nuevos, con su menú, despensa, compra y fotos. Tus datos actuales se conservan."), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: localized("Cancelar"), style: .cancel))
                 for (title, tastes) in [("Añadir y conservar mis gustos", false), ("Añadir y restaurar gustos de la copia", true)] {
-                    alert.addAction(UIAlertAction(title: title, style: .default) { [weak self] _ in self?.restoreBackup(value, tastes: tastes) })
+                    alert.addAction(UIAlertAction(title: localized(title), style: .default) { [weak self] _ in self?.restoreBackup(value, tastes: tastes) })
                 }
                 present(alert, animated: true)
             } catch { inform(error.localizedDescription) }
@@ -201,13 +212,13 @@ import AVFoundation
         Task {
             do {
                 _ = try await webView.callAsyncJavaScript("return await window.__recetarioRestore(value,tastes);", arguments: ["value": value, "tastes": tastes], in: nil, contentWorld: .page)
-                inform("Copia importada. Los espacios anteriores se conservan.")
-            } catch { inform("No se pudo importar la copia. Tus datos actuales se conservan.\n" + error.localizedDescription) }
+                inform(localized("Copia importada. Los espacios anteriores se conservan."))
+            } catch { inform(localized("No se pudo importar la copia. Tus datos actuales se conservan.") + "\n" + localized(error.localizedDescription)) }
         }
     }
     private func inform(_ message: String) {
-        let alert = UIAlertController(title: "Recetario", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Aceptar", style: .default)); present(alert, animated: true)
+        let alert = UIAlertController(title: "ReciSave", message: localized(message), preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: localized("Aceptar"), style: .default)); present(alert, animated: true)
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         view.backgroundColor = LocalRecipeStyle.background

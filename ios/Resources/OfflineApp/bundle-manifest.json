@@ -2,14 +2,34 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-C2jpkkp2.css",
-      "bytes": 357564,
-      "sha256": "996a38522fe38a793f74d2bfe6efb0658e3fa6f569e3ad53a6edb87c26e05759"
+      "path": "assets/index-BXgF3rvF.css",
+      "bytes": 358992,
+      "sha256": "c60d86de6b823c6d4cd676297b60c9fbef6e3fe5c7198fc837a1fde882261185"
     },
     {
-      "path": "assets/index-DUFZMZvS.js",
-      "bytes": 660552,
-      "sha256": "43bcafec2f72c53cfc102102f178ef1f1910d2006a5106f0079ebb2b7e7b55a1"
+      "path": "assets/index-kDtXbwE2.js",
+      "bytes": 1300333,
+      "sha256": "b8ec25fffbcd3469729d8224ddc43028ce19654fa057f7b17dd243736e10cfc3"
+    },
+    {
+      "path": "images/brand/icon-192.png",
+      "bytes": 37059,
+      "sha256": "3668ba6630fa4f4b9c53da2a3879ac3f184befe2b9283a050dc43c9e35645c26"
+    },
+    {
+      "path": "images/brand/icon-512.png",
+      "bytes": 221105,
+      "sha256": "bb0414fe33bf33dff26223fa744b155ca2b097a69ed54153ddb5bea8a5def6d8"
+    },
+    {
+      "path": "images/brand/recisave-a4-icon.png",
+      "bytes": 1289386,
+      "sha256": "4b95bb2e97907017571e80b42a3db14e72ab5398adbf9aad5afe80e1f9b1a0b4"
+    },
+    {
+      "path": "images/brand/recisave-a4-wordmark.png",
+      "bytes": 1000479,
+      "sha256": "4082a708f4842d331351b42ff133a30077aab53cabaf48c5ac95a560a62a396c"
     },
     {
       "path": "images/design/pantry.png",
@@ -283,13 +303,13 @@
     },
     {
       "path": "migrations.json",
-      "bytes": 6771,
-      "sha256": "171424af8c65ceced9b59473da0deaf4db6a6a275fa16f31d1d5192af0d2fd5a"
+      "bytes": 6816,
+      "sha256": "0073e419cb5aa54a570f1cdd8a1b5a8364ab5e36102a5891f5c9f87b0c2f1ae9"
     },
     {
       "path": "mobile/index.html",
-      "bytes": 466,
-      "sha256": "ecb13ec09e69c0eeaf04bdd47a91bc2a32c2f0e73d5fde48dcd1c73a904f65be"
+      "bytes": 465,
+      "sha256": "bd5025b3bd054168a0bdd72f5fd9adce129884e28b8e83af86b4fbd62451fae9"
     }
   ]
 }

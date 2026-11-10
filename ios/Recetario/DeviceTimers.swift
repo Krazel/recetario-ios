@@ -3,7 +3,7 @@ import UserNotifications
 
 actor DeviceTimers {
     private var revisions: [String: Int] = [:]
-    func update(id: String, title: String, timers: [String: Any]) async throws {
+    func update(id: String, title: String, timers: [String: Any], language: String = "en") async throws {
         guard id.utf8.count <= 80, id.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" }), title.utf8.count <= 1000, timers.count <= 100 else { throw LocalRecipeError.invalid("Temporizadores no válidos.") }
         let version = (revisions[id] ?? 0) + 1; revisions[id] = version
         let center = UNUserNotificationCenter.current(), prefix = "recetario.timer." + id + "."
@@ -22,8 +22,8 @@ actor DeviceTimers {
         guard revisions[id] == version, [.authorized, .provisional, .ephemeral].contains(settings.authorizationStatus) else { return }
         for (step, remaining) in pending {
             guard revisions[id] == version else { return }
-            let content = UNMutableNotificationContent(); content.title = "Temporizador terminado"
-            content.body = title + " · Paso " + String((Int(step) ?? 0) + 1) + ". Comprueba el punto."
+            let content = UNMutableNotificationContent(); content.title = NativeLocalization.text("Temporizador terminado", language: language)
+            content.body = title + " · " + NativeLocalization.text("Paso {step}. Comprueba el punto.", language: language, values: ["step": String((Int(step) ?? 0) + 1)])
             content.sound = .default
             let identifier = prefix + String(version) + "." + step
             try await center.add(UNNotificationRequest(identifier: identifier, content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, remaining), repeats: false)))

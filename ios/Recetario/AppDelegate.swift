@@ -10,7 +10,7 @@ import UIKit
             root=controller;window.rootViewController=controller
         } catch {
             let failed=UIViewController();failed.view.backgroundColor = .systemBackground
-            let label=UILabel();label.numberOfLines=0;label.text="No se puede abrir el recetario local. No borres la app ni sus datos. Reintenta con el dispositivo desbloqueado.\n\(error.localizedDescription)";label.translatesAutoresizingMaskIntoConstraints=false;failed.view.addSubview(label)
+            let label=UILabel();label.numberOfLines=0;label.text=NativeLocalization.text("No se puede abrir el recetario local. Conserva la app y sus datos.", language: NativeLocalization.effective(nil)) + "\n" + error.localizedDescription;label.translatesAutoresizingMaskIntoConstraints=false;failed.view.addSubview(label)
             NSLayoutConstraint.activate([label.leadingAnchor.constraint(equalTo:failed.view.leadingAnchor,constant:24),label.trailingAnchor.constraint(equalTo:failed.view.trailingAnchor,constant:-24),label.centerYAnchor.constraint(equalTo:failed.view.centerYAnchor)])
             window.rootViewController=failed
         }
