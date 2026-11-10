@@ -54,7 +54,7 @@ while time.time() < deadline:
         files = {}
         for fmt, kind in [('png', 'png'), ('jpg', 'jpeg')]:
             target = out / (name + '.' + fmt)
-            subprocess.run(['xcrun', 'simctl', 'io', device, 'screenshot', '--type=' + kind, str(target)], check=True, capture_output=True, timeout=30)
+            subprocess.run(['xcrun', 'simctl', 'io', device, 'screenshot', '--type=' + kind, str(target)], check=True, capture_output=True, timeout=60)
             data = target.read_bytes()
             files[fmt] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
         raw = (out / (name + '.png')).read_bytes()

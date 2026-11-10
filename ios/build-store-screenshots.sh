@@ -24,7 +24,12 @@ xcrun simctl boot "$DEVICE_ID" || true
 xcrun simctl bootstatus "$DEVICE_ID" -b > build/store-boot.log 2>&1 &
 BOOT_PID=$!
 xcodebuild -project Recetario.xcodeproj -scheme RecetarioStoreScreenshots -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build-for-testing
-wait "$BOOT_PID"
+if ! wait "$BOOT_PID"; then
+  tail -n 15 build/store-boot.log
+  xcrun simctl shutdown "$DEVICE_ID" || true
+  xcrun simctl boot "$DEVICE_ID"
+  xcrun simctl bootstatus "$DEVICE_ID" -b
+fi
 xcrun simctl status_bar "$DEVICE_ID" override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --batteryState charged --batteryLevel 100
 python3 store-capture-watch.py watch "$DEVICE_ID" "$RECETARIO_STORE_DEVICE" build/store-captures > build/store-watcher.log 2>&1 &
 WATCH_PID=$!

@@ -10,7 +10,7 @@ import WebKit
         let ack = documents.appendingPathComponent("recetario-store-ack.json")
         let data = try JSONSerialization.data(withJSONObject: ["name":name])
         try data.write(to: request, options: .atomic)
-        for _ in 0..<600 {
+        for _ in 0..<1800 {
             if let bytes = try? Data(contentsOf: ack), let value = try? JSONSerialization.jsonObject(with: bytes) as? [String:Any], value["name"] as? String == name {
                 guard value["ok"] as? Bool == true else { throw NSError(domain:"StoreCapture",code:1,userInfo:[NSLocalizedDescriptionKey:value["error"] as? String ?? "Capture failed"]) }
                 print("RECETARIO_STORE_CAPTURED=\(name)"); return
