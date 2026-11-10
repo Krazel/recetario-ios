@@ -45,10 +45,14 @@ import WebKit
         XCTAssertEqual(cold?["url"] as? String, "https://youtu.be/cold-start")
         controller.openImportSource(URL(string: "https://www.tiktok.com/@author/video/123")!, text: "Descripción compartida de prueba")
         let checkWarm = """
-        for(let i=0;i<200;i++){if([...document.querySelectorAll('button')].some(b=>b.textContent==='Abrir siguiente enlace'))break;await new Promise(r=>setTimeout(r,25));}
+        const next=()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='Abrir siguiente enlace');
+        const wait=async(predicate,label)=>{for(let i=0;i<800;i++){if(predicate())return;await new Promise(r=>setTimeout(r,25));}throw Error(label+'; '+document.body.innerText.slice(0,1600));};
+        await wait(()=>!!next(),'El segundo enlace no quedó en la cola');
         if(document.querySelector('.import-panel textarea')?.value!==caption)throw Error('La recepción cambió el formulario abierto');
-        document.querySelector('.import-heading button').click();await new Promise(r=>setTimeout(r,100));
-        [...document.querySelectorAll('button')].find(b=>b.textContent==='Abrir siguiente enlace').click();await new Promise(r=>setTimeout(r,100));
+        document.querySelector('.import-heading button').click();
+        await wait(()=>!document.querySelector('.import-panel')&&!!next()&&!next().disabled,'La cola no se pudo abrir después de cerrar el formulario');
+        next().click();
+        await wait(()=>document.querySelector('.import-panel textarea')?.value==='Descripción compartida de prueba'&&document.querySelector('.import-panel input[type=url]')?.value==='https://www.tiktok.com/@author/video/123','El segundo enlace no conservó su descripción');
         return {text:document.querySelector('.import-panel textarea')?.value,url:document.querySelector('.import-panel input[type=url]')?.value};
         """
         let warm = try await web.callAsyncJavaScript(checkWarm, arguments: ["caption":caption], in: nil, contentWorld: .page) as? [String: Any]
