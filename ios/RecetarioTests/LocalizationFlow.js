@@ -13,6 +13,7 @@ await click('.bottom-nav button:last-child');await wait(()=>document.querySelect
 set('.language-settings select',code);await wait(()=>window.__recetarioLanguage.get()===code&&document.querySelector('.language-settings select')?.value===code,'persist language');
 if(document.documentElement.lang!==code)throw Error('Document language stale');
 if(document.querySelector('.bottom-nav button:first-child').innerText.trim()!==labels.recipes||document.querySelector('.bottom-nav button:last-child').innerText.trim()!==labels.profile)throw Error('Navigation language stale');
+for(const icon of document.querySelectorAll('.bottom-nav button>svg')){const box=icon.getBoundingClientRect();if(box.width<20||box.height<20)throw Error(code+' navigation icon shrank with long text');}
 contained('.language-settings');contained('.profile-page');
 const {books}=await(await fetch('/api/recetario')).json(),book=books[0].id;
 let backup=await window.__recetarioExport();
