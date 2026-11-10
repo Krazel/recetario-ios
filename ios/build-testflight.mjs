@@ -65,6 +65,18 @@ try {
   assert.equal(info.ITSAppUsesNonExemptEncryption, false);
   assert(Number(info.DTSDKName.match(/\d+/)[0]) >= 26, 'iOS 26 SDK required');
   assert(fs.existsSync(path.join(app, 'PrivacyInfo.xcprivacy')), 'Missing privacy manifest');
+  const offlineBundle=path.join(app,'OfflineApp'),bundleBytes=fs.readFileSync(path.join(offlineBundle,'bundle-manifest.json'));
+  const commonBundleManifestSHA256=crypto.createHash('sha256').update(bundleBytes).digest('hex');
+  assert.equal(commonBundleManifestSHA256,cfg.commonBundleManifestSHA256,'Archived shared bundle must match the QA-approved release');
+  for(const entry of JSON.parse(bundleBytes).files){
+    const file=path.resolve(offlineBundle,entry.path);
+    assert(file.startsWith(path.resolve(offlineBundle)+path.sep),'Invalid archived bundle path');
+    const bytes=fs.readFileSync(file);assert.equal(bytes.length,entry.bytes);assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),entry.sha256);
+  }
+  if(cfg.marketingVersion==='0.5'){
+    assert.equal(info.CFBundleDisplayName,'ReciSave');
+    assert.deepEqual([...info.CFBundleLocalizations].sort(),['ca','de','en','es','fr','it','pt']);
+  }
   run('codesign', ['--verify', '--deep', '--strict', app]);
   const options = path.join(temp, 'ExportOptions.plist');
   run('python3', ['-c', 'import plistlib,json,sys; plistlib.dump(json.load(sys.stdin),open(sys.argv[1],"wb"))', options], {input:JSON.stringify({method:'app-store-connect',destination:'export',teamID:cfg.teamId,signingStyle:automatic?'automatic':'manual',...(automatic?{}:{signingCertificate:'Apple Distribution',provisioningProfiles:{[cfg.bundleId]:provision.Name}}),manageAppVersionAndBuildNumber:false,uploadSymbols:true,stripSwiftSymbols:true}),stdio:['pipe','inherit','inherit']});
@@ -77,6 +89,9 @@ try {
   const manifest = {app:'Recetario',purpose:'TestFlight',version:cfg.marketingVersion,build:cfg.buildNumber,bundleId:cfg.bundleId,appId:cfg.appId,commit:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,sha256:crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex'),bytes:fs.statSync(artifact).size,sdk:info.DTSDKName,signatureVerified:true};
   manifest.appIconSourceSHA256 = crypto.createHash('sha256').update(fs.readFileSync('ios/Recetario/Assets.xcassets/AppIcon.appiconset/AppIcon.png')).digest('hex');
   manifest.compiledAssetsSHA256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(app, 'Assets.car'))).digest('hex');
+  manifest.commonBundleManifestSHA256=commonBundleManifestSHA256;
+  manifest.displayName=info.CFBundleDisplayName;
+  manifest.languages=info.CFBundleLocalizations;
   const save = () => fs.writeFileSync('artifacts/testflight/build.json', JSON.stringify(manifest,null,2)+'\n');
   save(); console.log("RECETARIO_PACKAGE_RECEIPT="+JSON.stringify(manifest));
   const deliver = operation => {
