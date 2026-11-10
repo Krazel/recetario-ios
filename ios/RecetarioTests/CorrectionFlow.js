@@ -17,6 +17,9 @@ const failNextSave=action=>{
 };
 const noHorizontal=selector=>{const e=document.querySelector(selector);check(!!e,'Missing layout: '+selector);check(e.scrollWidth<=e.clientWidth+2,selector+' overflow '+e.scrollWidth+'/'+e.clientWidth+' '+JSON.stringify([...e.querySelectorAll('*')].filter(n=>{const r=n.getBoundingClientRect(),b=e.getBoundingClientRect();return visible(n)&&(r.right>b.right+2||r.left<b.left-2);}).slice(0,8).map(n=>({tag:n.tagName,class:n.className,w:n.getBoundingClientRect().width,style:getComputedStyle(n).cssText}))));for(const input of e.querySelectorAll('input:not([type=hidden]),textarea,select')){if(!visible(input))continue;const r=input.getBoundingClientRect(),box=e.getBoundingClientRect();check(r.left>=box.left-2&&r.right<=box.right+2,'Input outside '+selector+': '+input.outerHTML.slice(0,150));}};
 await wait(()=>button('Añadir receta'));
+await wait(()=>document.querySelector('.empty-state,.recipe-card'));noHorizontal('.library-toolbar');
+const sortControl=document.querySelector('select[aria-label="Ordenar recetas"]'),sortFont=getComputedStyle(sortControl),metrics=document.createElement('canvas').getContext('2d');metrics.font=sortFont.font;
+check(sortControl.clientWidth>=metrics.measureText('Menor tiempo').width+32,'Sort option is clipped by the native control');
 await tap('Añadir receta');await tap('Escribir mi receta');await wait(()=>document.querySelector('.recipe-editor'));
 noHorizontal('.recipe-editor');noHorizontal('.approved-recipe-editor');
 write('.recipe-editor input[required]','Receta de correcciones');
