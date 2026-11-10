@@ -2,14 +2,14 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-BPU0Pirv.js",
-      "bytes": 1302674,
-      "sha256": "3c0c4821908824d32c45dfbd17e197c62e4a3db9d8f067c33195ad4f93959895"
+      "path": "assets/index-Bd4RMPHi.css",
+      "bytes": 359017,
+      "sha256": "e6b7f3e9524a7251bc4c3673a7f97f61d672ab3b0791bafbec7f3e2e0c3247b9"
     },
     {
-      "path": "assets/index-BXgF3rvF.css",
-      "bytes": 358992,
-      "sha256": "c60d86de6b823c6d4cd676297b60c9fbef6e3fe5c7198fc837a1fde882261185"
+      "path": "assets/index-CyqA7YPU.js",
+      "bytes": 1302875,
+      "sha256": "977befaf4db72b1ed52c8ffd235a3a7f305bc2b244effc89b083867e9c752611"
     },
     {
       "path": "images/brand/icon-192.png",
@@ -309,7 +309,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 465,
-      "sha256": "b8f813fbbdda9d799840f11c9f4ee850fb292c5a5e3e7d0333ffefe2c47b333f"
+      "sha256": "72e041cc87da94a4f09108d06c91ae6d96c2d8587ffa0ea6f4b773c83cd1074e"
     }
   ]
 }

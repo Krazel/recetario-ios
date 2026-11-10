@@ -26,7 +26,6 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        locale: ${{ fromJSON(inputs.locale == 'all' && '["en","es","ca","de","fr","it","pt"]' || format('["{0}"]', inputs.locale)) }}
         device: ${{ fromJSON(inputs.device == 'all' && '["iphone","iphone-medium","ipad"]' || inputs.device == 'phones' && '["iphone","iphone-medium"]' || format('["{0}"]', inputs.device)) }}
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +34,6 @@ jobs:
       - name: Capture actual native screens
         env:
           RECETARIO_STORE_DEVICE: ${{ matrix.device }}
-          RECETARIO_STORE_LOCALE: ${{ matrix.locale }}
+          RECETARIO_STORE_LOCALE: ${{ inputs.locale }}
         run: bash ios/build-store-screenshots.sh
       # Capture bytes are in logs; no paid artifacts/cache storage, signing or upload.

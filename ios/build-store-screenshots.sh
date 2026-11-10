@@ -22,7 +22,7 @@ node -e 'const fs=require("fs"),crypto=require("crypto");const h=crypto.createHa
 python3 - <<'PY'
 import json, os, pathlib
 locale=os.environ.get('RECETARIO_STORE_LOCALE','en')
-if locale not in ['en','es','ca','de','fr','it','pt']: raise ValueError('Unsupported capture locale')
+if locale not in ['all','en','es','ca','de','fr','it','pt']: raise ValueError('Unsupported capture locale')
 pathlib.Path('StoreScreenshotTests/StoreLocale.json').write_text(json.dumps({'locale':locale}))
 PY
 xcodegen generate

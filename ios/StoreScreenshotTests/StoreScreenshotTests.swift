@@ -5,6 +5,7 @@ import WebKit
 
 @MainActor final class StoreScreenshotTests: XCTestCase {
     private var appWebView: WKWebView?
+    private var currentLocale="en"
     private func capture(_ name: String) async throws {
         // A DOM update alone can precede WebKit's presented frame. Flush through
         // afterScreenUpdates before asking simctl for the actual device image.
@@ -20,10 +21,10 @@ import WebKit
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let request = documents.appendingPathComponent("recetario-store-request.json")
         let ack = documents.appendingPathComponent("recetario-store-ack.json")
-        let data = try JSONSerialization.data(withJSONObject: ["name":name])
+        let data = try JSONSerialization.data(withJSONObject: ["name":name,"locale":currentLocale])
         try data.write(to: request, options: .atomic)
         for _ in 0..<1800 {
-            if let bytes = try? Data(contentsOf: ack), let value = try? JSONSerialization.jsonObject(with: bytes) as? [String:Any], value["name"] as? String == name {
+            if let bytes = try? Data(contentsOf: ack), let value = try? JSONSerialization.jsonObject(with: bytes) as? [String:Any], value["name"] as? String == name, value["locale"] as? String == currentLocale {
                 guard value["ok"] as? Bool == true else { throw NSError(domain:"StoreCapture",code:1,userInfo:[NSLocalizedDescriptionKey:value["error"] as? String ?? "Capture failed"]) }
                 print("RECETARIO_STORE_CAPTURED=\(name)"); return
             }
@@ -32,11 +33,17 @@ import WebKit
         XCTFail("Host did not capture \(name)"); throw NSError(domain:"StoreCapture",code:2)
     }
     func testActualNativeScreensForStore() async throws {
+        let bundle=Bundle(for:Self.self)
+        let config=try JSONSerialization.jsonObject(with:Data(contentsOf:XCTUnwrap(bundle.url(forResource:"StoreLocale",withExtension:"json")))) as! [String:String]
+        let chosen=try XCTUnwrap(config["locale"])
+        let locales=chosen == "all" ? NativeLocalization.languages : [chosen]
+        for locale in locales { try await captureLocale(locale) }
+    }
+    private func captureLocale(_ locale:String) async throws {
+        currentLocale=locale
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
         try FileManager.default.createDirectory(at:folder,withIntermediateDirectories:true)
         let bundle=Bundle(for:Self.self)
-        let config=try JSONSerialization.jsonObject(with:Data(contentsOf:XCTUnwrap(bundle.url(forResource:"StoreLocale",withExtension:"json")))) as! [String:String]
-        let locale=try XCTUnwrap(config["locale"])
         guard NativeLocalization.languages.contains(locale) else { throw NSError(domain:"StoreLocale",code:1) }
         let fixtures=try JSONSerialization.jsonObject(with:Data(contentsOf:XCTUnwrap(bundle.url(forResource:"LocalizedFixtures",withExtension:"json")))) as! [String:Any]
         let fixture=try XCTUnwrap(fixtures[locale])

@@ -12,14 +12,17 @@ if(stageName==='home'){await click('.bottom-nav button:first-child');await wait(
 await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'Settings');
 set('.language-settings select',code);await wait(()=>window.__recetarioLanguage.get()===code&&document.querySelector('.language-settings select')?.value===code,'persist language');
 if(document.documentElement.lang!==code)throw Error('Document language stale');
+if(document.querySelector('.bottom-nav button:first-child').innerText.trim()!==labels.recipes||document.querySelector('.bottom-nav button:last-child').innerText.trim()!==labels.profile)throw Error('Navigation language stale');
 contained('.language-settings');contained('.profile-page');
 const {books}=await(await fetch('/api/recetario')).json(),book=books[0].id;
 let backup=await window.__recetarioExport();
 if(!backup.books.flatMap(b=>b.recipes).some(r=>r.title==='Original conservado'))await post({action:'save',bookId:book,recipe:{title:'Original conservado',url:'https://example.com/original',category:'Sin clasificar',ingredients:'200 g de arroz\n2 tomates',steps:'Cocer 10 minutos.\nServir.',notes:'Notas del autor. No traducir.',minutes:10,favorite:0,servings:2,tags:'',provenance:'Fuente original',photo:'art:pasta'}});
 const original=(await window.__recetarioExport()).books.flatMap(b=>b.recipes).find(r=>r.title==='Original conservado');
 await click('.bottom-nav button:first-child');await wait(()=>document.querySelector('.library-toolbar'),'library');contained('.library-toolbar');
-for(const image of document.querySelectorAll('.brand-mark img'))await wait(()=>image.complete&&image.naturalWidth>0,'A4 image');
+for(const image of document.querySelectorAll('.recisave-lockup img'))await wait(()=>image.complete&&image.naturalWidth>0,'A4 image');
 if(document.querySelectorAll('.masthead img[alt="ReciSave"]').length!==1)throw Error('Missing or duplicated wordmark');
+const iconBox=document.querySelector('.masthead .recisave-icon').getBoundingClientRect(),wordBox=document.querySelector('.masthead .recisave-wordmark').getBoundingClientRect();
+if(wordBox.width<80||iconBox.right>wordBox.left+1||Math.abs((iconBox.top+iconBox.bottom)/2-(wordBox.top+wordBox.bottom)/2)>4)throw Error('A4 lockup is not horizontal and legible');
 await click('.add-recipe-button');await click('.add-menu button:nth-child(2)');await wait(()=>document.querySelector('.recipe-editor form'),'editor');
 if(document.querySelector('.recipe-editor .recipe-language select').value!==code)throw Error('New recipe did not default to effective language');
 const codes=['en','es','ca','de','fr','it','pt'],override=codes[(codes.indexOf(code)+1)%codes.length];
@@ -40,6 +43,7 @@ await click('.add-recipe-button');await click('.add-menu button:first-child');aw
 if(document.querySelector('.import-panel .recipe-language select').value!==code)throw Error('Import language default wrong');contained('.import-panel');
 await click('.import-heading button');
 await click('.bottom-nav button:nth-child(2)');await wait(()=>document.querySelector('.planner'),'planner');contained('.workspace');
+if(![...document.querySelectorAll('.add-meal')].some(node=>node.innerText.replace(/\s+/g,' ').startsWith(labels.addBreakfast)))throw Error('Meal action language stale');
 await click('.bottom-nav button:nth-child(3)');await wait(()=>document.querySelector('.cesta-page'),'shopping');contained('.cesta-page');
 await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'profile');
 contained('.profile-page');
