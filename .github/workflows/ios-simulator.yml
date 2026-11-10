@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: recetario-ios-simulator
+  group: recetario-ios-simulator-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   build:
