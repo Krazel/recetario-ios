@@ -141,6 +141,7 @@
 "Bolsas de congelación" = "Freezer bags";
 "Bolsas para perro" = "Dog waste bags";
 "Boniato" = "Sweet potato";
+"Borrador visual" = "Visual draft";
 "Borrador visual experimental del vídeo: confirma ingredientes y acciones. Cantidades, tiempos y raciones no indicados." = "Experimental visual draft of the video: confirm ingredients and actions. Quantities, times and servings not specified.";
 "Borrador visual experimental. Comprueba ingredientes y acciones con los fotogramas; pueden faltar datos o contener errores." = "Experimental visual draft. Check ingredients and actions against the frames; information may be missing or incorrect.";
 "Borrador visual ·" = "Visual draft ·";
@@ -606,6 +607,7 @@
 "Has alcanzado las lecturas disponibles de hoy. Tus recetas locales siguen disponibles." = "You have reached today's reading allowance. Your local recipes remain available.";
 "Hash no admitido." = "Unsupported hash.";
 "Hasta 30 min" = "Up to 30 min";
+"Hasta {p0} min" = "Up to {p0} min";
 "Hay otra petición de IA en curso. Espera a que termine." = "Another AI request is in progress. Wait for it to finish.";
 "Hay otra petición en curso. No se ha generado gasto." = "Another request is in progress. No cost was incurred.";
 "Hay peticiones cuyo consumo sigue pendiente de confirmar." = "Some requests still have usage awaiting confirmation.";
@@ -1224,6 +1226,7 @@
 "Receta guardada." = "Recipe saved.";
 "Receta local no válida." = "Invalid local recipe.";
 "Receta no encontrada." = "Recipe not found.";
+"Receta para {p0}" = "Recipe for {p0}";
 "Receta propia" = "Your own recipe";
 "Receta sin foto" = "Recipe without photo";
 "Recetario" = "Recipe collection";
@@ -1365,6 +1368,7 @@
 "Tallarines" = "Tagliatelle";
 "También puedes copiar y pegar" = "You can also copy and paste";
 "Tampones" = "Tampons";
+"Te falta: {p0}" = "Missing: {p0}";
 "Te han invitado a un recetario" = "You have been invited to a collection";
 "Tempeh" = "Tempeh";
 "Temporizador del paso" = "Step timer";
@@ -1606,7 +1610,12 @@
 "y acepta" = "and accept";
 "youtu.be" = "youtu.be";
 "youtube.com" = "youtube.com";
+"{p0} acciones sugeridas" = "{p0} suggested actions";
+"{p0} ingredientes" = "{p0} ingredients";
+"{p0} pasos" = "{p0} steps";
+"{p0} raciones" = "{p0} servings";
 "{p0} temporizador del paso {p1}" = "{p0} timer for step {p1}";
+"{p0}% disponible este mes" = "{p0}% available this month";
 "· Archivada" = "· Archived";
 "· Despensa descontada" = "· Pantry subtracted";
 "· Habitual" = "· Regular";

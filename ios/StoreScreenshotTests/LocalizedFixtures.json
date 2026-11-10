@@ -1,0 +1,198 @@
+{
+  "en": {
+    "titles": [
+      "Courgette soup",
+      "Vegetable omelette",
+      "Tomato and basil pasta"
+    ],
+    "soup": [
+      "2 courgettes\n1 potato\n1 onion\n500 ml water\n1 tbsp olive oil\nSalt",
+      "Wash and chop the vegetables.\nSoften the onion in olive oil for 5 minutes.\nAdd the courgettes, potato and water. Cook for 15 minutes.\nBlend until smooth and season with salt."
+    ],
+    "omelette": [
+      "4 eggs\n1 courgette\n1 onion\n1 tbsp olive oil\nSalt",
+      "Dice the courgette and onion.\nSoften the vegetables for 8 minutes.\nBeat the eggs and mix with the vegetables.\nCook gently in a frying pan and serve."
+    ],
+    "pasta": [
+      "200 g pasta\n3 tomatoes\n1 garlic clove\n1 tbsp olive oil\n6 basil leaves\nSalt",
+      "Bring a large pan of salted water to the boil.\nCook the pasta for 10 minutes, reserving a little cooking water.\nSoften the garlic in olive oil. Add the chopped tomatoes and cook for 8 minutes.\nToss the pasta with the sauce and finish with fresh basil."
+    ],
+    "pantry": "2 tomatoes\n200 g rice\n4 eggs\nOlive oil\nSalt",
+    "milk": "Milk",
+    "note": "Own demonstration recipe.",
+    "provenance": "Own recipe",
+    "labels": {
+      "Cocinar": "Cook",
+      "Cerrar modo cocinar": "Close cooking mode",
+      "Mi despensa": "My pantry"
+    }
+  },
+  "es": {
+    "titles": [
+      "Crema de calabacín",
+      "Tortilla de verduras",
+      "Pasta con tomate y albahaca"
+    ],
+    "soup": [
+      "2 calabacines\n1 patata\n1 cebolla\n500 ml de agua\n1 cucharada de aceite de oliva\nSal",
+      "Lavar y cortar las verduras.\nRehogar la cebolla con el aceite durante 5 minutos.\nAñadir el calabacín, la patata y el agua. Cocer 15 minutos.\nTriturar hasta obtener una crema y ajustar la sal."
+    ],
+    "omelette": [
+      "4 huevos\n1 calabacín\n1 cebolla\n1 cucharada de aceite de oliva\nSal",
+      "Cortar el calabacín y la cebolla en dados pequeños.\nRehogar las verduras durante 8 minutos.\nBatir los huevos y mezclar con las verduras.\nCuajar en la sartén a fuego suave y servir."
+    ],
+    "pasta": [
+      "200 g de pasta\n3 tomates\n1 diente de ajo\n1 cucharada de aceite de oliva\n6 hojas de albahaca\nSal",
+      "Calentar agua abundante con una pizca de sal.\nCocer la pasta durante 10 minutos y reservar un poco del agua.\nDorar el ajo con aceite, añadir el tomate troceado y cocinar 8 minutos.\nMezclar la pasta con la salsa y terminar con albahaca fresca."
+    ],
+    "pantry": "2 tomates\n200 g de arroz\n4 huevos\nAceite de oliva\nSal",
+    "milk": "Leche",
+    "note": "Receta propia de demostración.",
+    "provenance": "Receta propia",
+    "labels": {
+      "Cocinar": "Cocinar",
+      "Cerrar modo cocinar": "Cerrar modo cocinar",
+      "Mi despensa": "Mi despensa"
+    }
+  },
+  "ca": {
+    "titles": [
+      "Crema de carbassó",
+      "Truita de verdures",
+      "Pasta amb tomàquet i alfàbrega"
+    ],
+    "soup": [
+      "2 carbassons\n1 patata\n1 ceba\n500 ml d’aigua\n1 cullerada d’oli d’oliva\nSal",
+      "Rentar i tallar les verdures.\nSofregir la ceba amb l’oli durant 5 minuts.\nAfegir el carbassó, la patata i l’aigua. Coure 15 minuts.\nTriturar fins a obtenir una crema i ajustar la sal."
+    ],
+    "omelette": [
+      "4 ous\n1 carbassó\n1 ceba\n1 cullerada d’oli d’oliva\nSal",
+      "Tallar el carbassó i la ceba a daus petits.\nSofregir les verdures durant 8 minuts.\nBatre els ous i barrejar-los amb les verdures.\nQuallar a la paella a foc suau i servir."
+    ],
+    "pasta": [
+      "200 g de pasta\n3 tomàquets\n1 gra d’all\n1 cullerada d’oli d’oliva\n6 fulles d’alfàbrega\nSal",
+      "Escalfar aigua abundant amb un pessic de sal.\nCoure la pasta durant 10 minuts i reservar una mica d’aigua.\nDaurar l’all amb oli, afegir el tomàquet trossejat i coure 8 minuts.\nBarrejar la pasta amb la salsa i acabar amb alfàbrega fresca."
+    ],
+    "pantry": "2 tomàquets\n200 g d’arròs\n4 ous\nOli d’oliva\nSal",
+    "milk": "Llet",
+    "note": "Recepta pròpia de demostració.",
+    "provenance": "Recepta pròpia",
+    "labels": {
+      "Cocinar": "Cuinar",
+      "Cerrar modo cocinar": "Tancar el mode cuina",
+      "Mi despensa": "El meu rebost"
+    }
+  },
+  "de": {
+    "titles": [
+      "Zucchinicremesuppe",
+      "Gemüseomelett",
+      "Pasta mit Tomaten und Basilikum"
+    ],
+    "soup": [
+      "2 Zucchini\n1 Kartoffel\n1 Zwiebel\n500 ml Wasser\n1 EL Olivenöl\nSalz",
+      "Das Gemüse waschen und klein schneiden.\nDie Zwiebel 5 Minuten in Olivenöl dünsten.\nZucchini, Kartoffel und Wasser hinzufügen. 15 Minuten kochen.\nFein pürieren und mit Salz abschmecken."
+    ],
+    "omelette": [
+      "4 Eier\n1 Zucchini\n1 Zwiebel\n1 EL Olivenöl\nSalz",
+      "Zucchini und Zwiebel klein würfeln.\nDas Gemüse 8 Minuten dünsten.\nDie Eier verquirlen und mit dem Gemüse vermischen.\nBei schwacher Hitze in der Pfanne stocken lassen und servieren."
+    ],
+    "pasta": [
+      "200 g Pasta\n3 Tomaten\n1 Knoblauchzehe\n1 EL Olivenöl\n6 Basilikumblätter\nSalz",
+      "Reichlich Salzwasser zum Kochen bringen.\nDie Pasta 10 Minuten kochen und etwas Kochwasser aufheben.\nDen Knoblauch in Olivenöl dünsten. Die gewürfelten Tomaten hinzufügen und 8 Minuten garen.\nDie Pasta mit der Sauce vermischen und mit frischem Basilikum servieren."
+    ],
+    "pantry": "2 Tomaten\n200 g Reis\n4 Eier\nOlivenöl\nSalz",
+    "milk": "Milch",
+    "note": "Eigenes Beispielrezept.",
+    "provenance": "Eigenes Rezept",
+    "labels": {
+      "Cocinar": "Kochen",
+      "Cerrar modo cocinar": "Kochmodus schließen",
+      "Mi despensa": "Mein Vorrat"
+    }
+  },
+  "fr": {
+    "titles": [
+      "Velouté de courgettes",
+      "Omelette aux légumes",
+      "Pâtes à la tomate et au basilic"
+    ],
+    "soup": [
+      "2 courgettes\n1 pomme de terre\n1 oignon\n500 ml d’eau\n1 c. à soupe d’huile d’olive\nSel",
+      "Laver et couper les légumes.\nFaire revenir l’oignon dans l’huile pendant 5 minutes.\nAjouter les courgettes, la pomme de terre et l’eau. Cuire 15 minutes.\nMixer jusqu’à obtenir un velouté et ajuster le sel."
+    ],
+    "omelette": [
+      "4 œufs\n1 courgette\n1 oignon\n1 c. à soupe d’huile d’olive\nSel",
+      "Couper la courgette et l’oignon en petits dés.\nFaire revenir les légumes pendant 8 minutes.\nBattre les œufs et les mélanger aux légumes.\nFaire prendre à feu doux dans une poêle et servir."
+    ],
+    "pasta": [
+      "200 g de pâtes\n3 tomates\n1 gousse d’ail\n1 c. à soupe d’huile d’olive\n6 feuilles de basilic\nSel",
+      "Porter une grande quantité d’eau salée à ébullition.\nCuire les pâtes pendant 10 minutes et réserver un peu d’eau.\nFaire revenir l’ail dans l’huile. Ajouter les tomates coupées et cuire 8 minutes.\nMélanger les pâtes à la sauce et terminer avec du basilic frais."
+    ],
+    "pantry": "2 tomates\n200 g de riz\n4 œufs\nHuile d’olive\nSel",
+    "milk": "Lait",
+    "note": "Recette de démonstration originale.",
+    "provenance": "Recette personnelle",
+    "labels": {
+      "Cocinar": "Cuisiner",
+      "Cerrar modo cocinar": "Fermer le mode cuisine",
+      "Mi despensa": "Mes réserves"
+    }
+  },
+  "it": {
+    "titles": [
+      "Vellutata di zucchine",
+      "Frittata di verdure",
+      "Pasta al pomodoro e basilico"
+    ],
+    "soup": [
+      "2 zucchine\n1 patata\n1 cipolla\n500 ml di acqua\n1 cucchiaio di olio d’oliva\nSale",
+      "Lavare e tagliare le verdure.\nRosolare la cipolla nell’olio per 5 minuti.\nAggiungere le zucchine, la patata e l’acqua. Cuocere per 15 minuti.\nFrullare fino a ottenere una crema e regolare di sale."
+    ],
+    "omelette": [
+      "4 uova\n1 zucchina\n1 cipolla\n1 cucchiaio di olio d’oliva\nSale",
+      "Tagliare la zucchina e la cipolla a dadini.\nRosolare le verdure per 8 minuti.\nSbattere le uova e mescolarle alle verdure.\nCuocere in padella a fuoco basso e servire."
+    ],
+    "pasta": [
+      "200 g di pasta\n3 pomodori\n1 spicchio d’aglio\n1 cucchiaio di olio d’oliva\n6 foglie di basilico\nSale",
+      "Portare a ebollizione abbondante acqua salata.\nCuocere la pasta per 10 minuti e tenere da parte un po’ d’acqua.\nRosolare l’aglio nell’olio. Aggiungere i pomodori tagliati e cuocere per 8 minuti.\nMescolare la pasta con il sugo e completare con basilico fresco."
+    ],
+    "pantry": "2 pomodori\n200 g di riso\n4 uova\nOlio d’oliva\nSale",
+    "milk": "Latte",
+    "note": "Ricetta dimostrativa originale.",
+    "provenance": "Ricetta personale",
+    "labels": {
+      "Cocinar": "Cucina",
+      "Cerrar modo cocinar": "Chiudi modalità cucina",
+      "Mi despensa": "La mia dispensa"
+    }
+  },
+  "pt": {
+    "titles": [
+      "Creme de curgete",
+      "Omeleta de legumes",
+      "Massa com tomate e manjericão"
+    ],
+    "soup": [
+      "2 curgetes\n1 batata\n1 cebola\n500 ml de água\n1 colher de sopa de azeite\nSal",
+      "Lavar e cortar os legumes.\nRefogar a cebola no azeite durante 5 minutos.\nJuntar a curgete, a batata e a água. Cozer durante 15 minutos.\nTriturar até obter um creme e retificar o sal."
+    ],
+    "omelette": [
+      "4 ovos\n1 curgete\n1 cebola\n1 colher de sopa de azeite\nSal",
+      "Cortar a curgete e a cebola em cubos pequenos.\nRefogar os legumes durante 8 minutos.\nBater os ovos e misturá-los com os legumes.\nDeixar prender na frigideira em lume brando e servir."
+    ],
+    "pasta": [
+      "200 g de massa\n3 tomates\n1 dente de alho\n1 colher de sopa de azeite\n6 folhas de manjericão\nSal",
+      "Levar bastante água com sal ao lume até ferver.\nCozer a massa durante 10 minutos e reservar um pouco da água.\nAlourar o alho no azeite. Juntar o tomate cortado e cozinhar durante 8 minutos.\nMisturar a massa com o molho e terminar com manjericão fresco."
+    ],
+    "pantry": "2 tomates\n200 g de arroz\n4 ovos\nAzeite\nSal",
+    "milk": "Leite",
+    "note": "Receita própria de demonstração.",
+    "provenance": "Receita própria",
+    "labels": {
+      "Cocinar": "Cozinhar",
+      "Cerrar modo cocinar": "Fechar modo de cozinha",
+      "Mi despensa": "A minha despensa"
+    }
+  }
+}

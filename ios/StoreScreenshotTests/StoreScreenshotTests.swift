@@ -34,7 +34,15 @@ import WebKit
     func testActualNativeScreensForStore() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
         try FileManager.default.createDirectory(at:folder,withIntermediateDirectories:true)
-        let controller = try OfflineAppController(database:DeviceDatabase(file:folder.appendingPathComponent("store.sqlite")))
+        let bundle=Bundle(for:Self.self)
+        let config=try JSONSerialization.jsonObject(with:Data(contentsOf:XCTUnwrap(bundle.url(forResource:"StoreLocale",withExtension:"json")))) as! [String:String]
+        let locale=try XCTUnwrap(config["locale"])
+        guard NativeLocalization.languages.contains(locale) else { throw NSError(domain:"StoreLocale",code:1) }
+        let fixtures=try JSONSerialization.jsonObject(with:Data(contentsOf:XCTUnwrap(bundle.url(forResource:"LocalizedFixtures",withExtension:"json")))) as! [String:Any]
+        let fixture=try XCTUnwrap(fixtures[locale])
+        let database=try DeviceDatabase(file:folder.appendingPathComponent("store.sqlite"))
+        try await database.writeKey(NativeLocalization.preferenceKey,value:locale)
+        let controller = try OfflineAppController(database:database)
         let window = UIWindow(frame:UIScreen.main.bounds)
         window.rootViewController=controller; window.makeKeyAndVisible(); controller.loadViewIfNeeded()
         defer { window.isHidden=true; window.rootViewController=nil }
@@ -45,17 +53,17 @@ import WebKit
             try await Task.sleep(nanoseconds:250_000_000)
         }
         let file=try XCTUnwrap(Bundle(for:Self.self).url(forResource:"StoreFixture",withExtension:"js"))
-        _ = try await web.callAsyncJavaScript("return await "+String(contentsOf:file,encoding:.utf8),arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("return await "+String(contentsOf:file,encoding:.utf8),arguments:["locale":locale,"fixture":fixture],in:nil,contentWorld:.page)
         try await capture("01-recetas")
-        _ = try await web.callAsyncJavaScript("const card=[...document.querySelectorAll('.card-open')].find(e=>e.innerText.includes('Pasta con tomate'));if(!card)throw Error('Recipe card missing');card.click();await window.__storeWait(()=>document.querySelector('.detail-body'));await new Promise(r=>setTimeout(r,700));return true;",arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("const card=[...document.querySelectorAll('.card-open')].find(e=>e.innerText.includes(window.__storeRecipeTitle));if(!card)throw Error('Recipe card missing');card.click();await window.__storeWait(()=>document.querySelector('.detail-body'));await new Promise(r=>setTimeout(r,700));return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("02-receta")
-        _ = try await web.callAsyncJavaScript("await window.__storeTap('Cocinar');await new Promise(r=>setTimeout(r,500));return true;",arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("await window.__storeTap(window.__storeLabels['Cocinar']);await new Promise(r=>setTimeout(r,500));return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("03-cocinar")
-        _ = try await web.callAsyncJavaScript("await window.__storeTap('Cerrar modo cocinar');await window.__storeTap('Mi menú');return true;",arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("await window.__storeTap(window.__storeLabels['Cerrar modo cocinar']);document.querySelector('.bottom-nav button:nth-child(2)').click();await window.__storeWait(()=>document.querySelector('.planner'));return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("04-menu")
-        _ = try await web.callAsyncJavaScript("await window.__storeTap('Compra');return true;",arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("await document.querySelector('.bottom-nav button:nth-child(3)').click();await window.__storeWait(()=>document.querySelector('.cesta-page'));return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("05-compra")
-        _ = try await web.callAsyncJavaScript("await window.__storeTap('Perfil');await window.__storeTap('Mi despensa');return true;",arguments:[:],in:nil,contentWorld:.page)
+        _ = try await web.callAsyncJavaScript("await document.querySelector('.bottom-nav button:last-child').click();await window.__storeTap(window.__storeLabels['Mi despensa']);return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("06-despensa")
     }
 }

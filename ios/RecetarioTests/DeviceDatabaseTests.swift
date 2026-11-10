@@ -48,6 +48,7 @@ final class DeviceDatabaseTests: XCTestCase {
         let directory = try XCTUnwrap(Bundle.main.url(forResource: "OfflineApp", withExtension: nil))
         XCTAssertTrue(FileManager.default.fileExists(atPath: directory.appendingPathComponent("mobile/index.html").path))
         let scripts = try JSONDecoder().decode([String].self, from: Data(contentsOf: directory.appendingPathComponent("migrations.json")))
-        XCTAssertEqual(scripts.count, 14)
+        XCTAssertEqual(scripts.count, 15)
+        XCTAssertTrue(scripts.last?.contains("ADD `language` text") == true)
     }
 }

@@ -2,7 +2,7 @@
 const code=language,stageName=stage;
 const delay=()=>new Promise(resolve=>setTimeout(resolve,30));
 const wait=async(predicate,name)=>{for(let i=0;i<400;i++){if(predicate())return;await delay();}throw Error(code+' '+innerWidth+' '+name+' '+document.body.innerText.slice(-1800));};
-const visible=node=>node.getClientRects().length&&getComputedStyle(node).visibility!=='hidden'&&!node.closest('[hidden],[inert],[data-closed]');
+const visible=node=>node.getClientRects().length&&getComputedStyle(node).visibility!=='hidden'&&!node.closest('[hidden],[inert],[data-closed],[aria-hidden="true"]');
 const contained=selector=>{const root=document.querySelector(selector);if(!root)throw Error('Missing '+selector);if(root.scrollWidth>root.clientWidth+2)throw Error(code+' '+innerWidth+' overflow '+selector+' '+root.scrollWidth+'/'+root.clientWidth);const box=root.getBoundingClientRect();for(const n of root.querySelectorAll('input:not([type=hidden]),select,textarea')){if(!visible(n))continue;const r=n.getBoundingClientRect();if(r.left<box.left-2||r.right>box.right+2)throw Error('Input outside '+selector+' '+n.outerHTML.slice(0,180));}};
 const click=async selector=>{await wait(()=>document.querySelector(selector)&&!document.querySelector(selector).disabled,selector);document.querySelector(selector).click();await delay();};
 const set=(selector,value)=>{const node=document.querySelector(selector);if(!node)throw Error('Missing input '+selector);const proto=node.tagName==='SELECT'?HTMLSelectElement.prototype:node.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(node,value);node.dispatchEvent(new Event(node.tagName==='SELECT'?'change':'input',{bubbles:true}));};
@@ -39,7 +39,7 @@ if(window.__recetarioLanguage.get()!==code)throw Error('Recipe language changed 
 await click('.add-recipe-button');await click('.add-menu button:first-child');await wait(()=>document.querySelector('.import-panel'),'import');
 if(document.querySelector('.import-panel .recipe-language select').value!==code)throw Error('Import language default wrong');contained('.import-panel');
 await click('.import-heading button');
-await click('.bottom-nav button:nth-child(2)');await wait(()=>document.querySelector('.planner-panel,.planner-page,.plan-wizard,.empty-plan,.workspace'),'planner');contained('.workspace');
+await click('.bottom-nav button:nth-child(2)');await wait(()=>document.querySelector('.planner'),'planner');contained('.workspace');
 await click('.bottom-nav button:nth-child(3)');await wait(()=>document.querySelector('.cesta-page'),'shopping');contained('.cesta-page');
 await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'profile');
 contained('.profile-page');

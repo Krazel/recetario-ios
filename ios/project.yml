@@ -59,7 +59,11 @@ targets:
     platform: iOS
     sources:
       - path: StoreScreenshotTests
-        excludes: [StoreFixture.js]
+        excludes: [StoreFixture.js, LocalizedFixtures.json, StoreLocale.json]
+      - path: StoreScreenshotTests/LocalizedFixtures.json
+        buildPhase: resources
+      - path: StoreScreenshotTests/StoreLocale.json
+        buildPhase: resources
       - path: StoreScreenshotTests/StoreFixture.js
         buildPhase: resources
     dependencies:

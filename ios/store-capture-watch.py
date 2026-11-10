@@ -17,7 +17,7 @@ if mode == 'emit':
         for fmt in ['png', 'jpg']:
             data = (out / (screen['name'] + '.' + fmt)).read_bytes()
             encoded = base64.b64encode(data).decode()
-            label = family + ':' + screen['name'] + ':' + fmt
+            label = manifest['locale'] + ':' + family + ':' + screen['name'] + ':' + fmt
             print('RECETARIO_STORE_IMAGE_BEGIN=' + label + ':' + str(len(encoded)), flush=True)
             for n in range(0, len(encoded), 4096):
                 print('RECETARIO_STORE_IMAGE_CHUNK=' + label + ':' + str(n // 4096) + ':' + encoded[n:n+4096], flush=True)
@@ -26,7 +26,9 @@ if mode == 'emit':
 if mode != 'watch':
     raise ValueError('Unknown mode')
 release = json.loads(pathlib.Path('testflight.json').read_text())
-manifest = {'family': family, 'simulatorId': device, 'sourceCommit': os.environ.get('GITHUB_SHA', ''), 'appSourceCommit': os.environ.get('GITHUB_SHA', ''), 'version': release['marketingVersion'], 'build': release['buildNumber'], 'capture': 'xcrun simctl io screenshot (full device, original PNG and JPEG)', 'fixture': 'own text and existing approved art crops; no AI calls', 'screens': []}
+locale=os.environ['RECETARIO_STORE_LOCALE']
+if locale not in ['en','es','ca','de','fr','it','pt']: raise ValueError('Unknown locale')
+manifest = {'locale':locale, 'commonBundleManifestSHA256':release['commonBundleManifestSHA256'], 'identity':'ReciSave A4 definitive', 'family': family, 'simulatorId': device, 'sourceCommit': os.environ.get('GITHUB_SHA', ''), 'appSourceCommit': os.environ.get('GITHUB_SHA', ''), 'version': release['marketingVersion'], 'build': release['buildNumber'], 'capture': 'xcrun simctl io screenshot (full device, original PNG and JPEG)', 'fixture': 'own text and existing approved art crops; no AI calls', 'screens': []}
 container = None
 last = None
 deadline = time.time() + 42 * 60

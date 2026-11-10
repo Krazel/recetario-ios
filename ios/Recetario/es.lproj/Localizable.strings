@@ -141,6 +141,7 @@
 "Bolsas de congelación" = "Bolsas de congelación";
 "Bolsas para perro" = "Bolsas para perro";
 "Boniato" = "Boniato";
+"Borrador visual" = "Borrador visual";
 "Borrador visual experimental del vídeo: confirma ingredientes y acciones. Cantidades, tiempos y raciones no indicados." = "Borrador visual experimental del vídeo: confirma ingredientes y acciones. Cantidades, tiempos y raciones no indicados.";
 "Borrador visual experimental. Comprueba ingredientes y acciones con los fotogramas; pueden faltar datos o contener errores." = "Borrador visual experimental. Comprueba ingredientes y acciones con los fotogramas; pueden faltar datos o contener errores.";
 "Borrador visual ·" = "Borrador visual ·";
@@ -606,6 +607,7 @@
 "Has alcanzado las lecturas disponibles de hoy. Tus recetas locales siguen disponibles." = "Has alcanzado las lecturas disponibles de hoy. Tus recetas locales siguen disponibles.";
 "Hash no admitido." = "Hash no admitido.";
 "Hasta 30 min" = "Hasta 30 min";
+"Hasta {p0} min" = "Hasta {p0} min";
 "Hay otra petición de IA en curso. Espera a que termine." = "Hay otra petición de IA en curso. Espera a que termine.";
 "Hay otra petición en curso. No se ha generado gasto." = "Hay otra petición en curso. No se ha generado gasto.";
 "Hay peticiones cuyo consumo sigue pendiente de confirmar." = "Hay peticiones cuyo consumo sigue pendiente de confirmar.";
@@ -1224,6 +1226,7 @@
 "Receta guardada." = "Receta guardada.";
 "Receta local no válida." = "Receta local no válida.";
 "Receta no encontrada." = "Receta no encontrada.";
+"Receta para {p0}" = "Receta para {p0}";
 "Receta propia" = "Receta propia";
 "Receta sin foto" = "Receta sin foto";
 "Recetario" = "Recetario";
@@ -1365,6 +1368,7 @@
 "Tallarines" = "Tallarines";
 "También puedes copiar y pegar" = "También puedes copiar y pegar";
 "Tampones" = "Tampones";
+"Te falta: {p0}" = "Te falta: {p0}";
 "Te han invitado a un recetario" = "Te han invitado a un recetario";
 "Tempeh" = "Tempeh";
 "Temporizador del paso" = "Temporizador del paso";
@@ -1606,7 +1610,12 @@
 "y acepta" = "y acepta";
 "youtu.be" = "youtu.be";
 "youtube.com" = "youtube.com";
+"{p0} acciones sugeridas" = "{p0} acciones sugeridas";
+"{p0} ingredientes" = "{p0} ingredientes";
+"{p0} pasos" = "{p0} pasos";
+"{p0} raciones" = "{p0} raciones";
 "{p0} temporizador del paso {p1}" = "{p0} temporizador del paso {p1}";
+"{p0}% disponible este mes" = "{p0}% disponible este mes";
 "· Archivada" = "· Archivada";
 "· Despensa descontada" = "· Despensa descontada";
 "· Habitual" = "· Habitual";

@@ -141,6 +141,7 @@
 "Bolsas de congelación" = "Bosses de congelació";
 "Bolsas para perro" = "Bosses per a gossos";
 "Boniato" = "Moniato";
+"Borrador visual" = "Esborrany visual";
 "Borrador visual experimental del vídeo: confirma ingredientes y acciones. Cantidades, tiempos y raciones no indicados." = "Esborrany visual experimental del vídeo: confirma ingredients i accions. Quantitats, temps i racions no indicats.";
 "Borrador visual experimental. Comprueba ingredientes y acciones con los fotogramas; pueden faltar datos o contener errores." = "Esborrany visual experimental. Comprova ingredients i accions amb els fotogrames; hi pot faltar informació o haver-hi errors.";
 "Borrador visual ·" = "Esborrany visual ·";
@@ -606,6 +607,7 @@
 "Has alcanzado las lecturas disponibles de hoy. Tus recetas locales siguen disponibles." = "Has arribat al límit de lectures d'avui. Les receptes locals continuen disponibles.";
 "Hash no admitido." = "Hash no admès.";
 "Hasta 30 min" = "Fins a 30 min";
+"Hasta {p0} min" = "Fins a {p0} min";
 "Hay otra petición de IA en curso. Espera a que termine." = "Hi ha una altra petició d'IA en curs. Espera que acabi.";
 "Hay otra petición en curso. No se ha generado gasto." = "Hi ha una altra petició en curs. No s'ha generat cap despesa.";
 "Hay peticiones cuyo consumo sigue pendiente de confirmar." = "Hi ha peticions amb un consum encara pendent de confirmar.";
@@ -1224,6 +1226,7 @@
 "Receta guardada." = "Recepta desada.";
 "Receta local no válida." = "Recepta local no vàlida.";
 "Receta no encontrada." = "Recepta no trobada.";
+"Receta para {p0}" = "Recepta per a {p0}";
 "Receta propia" = "Recepta pròpia";
 "Receta sin foto" = "Recepta sense foto";
 "Recetario" = "Receptari";
@@ -1365,6 +1368,7 @@
 "Tallarines" = "Tallarines";
 "También puedes copiar y pegar" = "També pots copiar i enganxar";
 "Tampones" = "Tampons";
+"Te falta: {p0}" = "Et falta: {p0}";
 "Te han invitado a un recetario" = "T'han convidat a un receptari";
 "Tempeh" = "Tempeh";
 "Temporizador del paso" = "Temporitzador del pas";
@@ -1606,7 +1610,12 @@
 "y acepta" = "i accepta";
 "youtu.be" = "youtu.be";
 "youtube.com" = "youtube.com";
+"{p0} acciones sugeridas" = "{p0} accions suggerides";
+"{p0} ingredientes" = "{p0} ingredients";
+"{p0} pasos" = "{p0} passos";
+"{p0} raciones" = "{p0} racions";
 "{p0} temporizador del paso {p1}" = "{p0} temporitzador del pas {p1}";
+"{p0}% disponible este mes" = "{p0}% disponible aquest mes";
 "· Archivada" = "· Arxivada";
 "· Despensa descontada" = "· Rebost descomptat";
 "· Habitual" = "· Habitual";

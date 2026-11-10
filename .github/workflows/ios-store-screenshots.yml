@@ -7,10 +7,15 @@ on:
         type: choice
         options: [all, phones, iphone, iphone-medium, ipad]
         default: all
+      locale:
+        description: App language for actual native captures
+        type: choice
+        options: [all, en, es, ca, de, fr, it, pt]
+        default: all
 permissions:
   contents: read
 concurrency:
-  group: recetario-store-screenshots-${{ inputs.device || 'all' }}
+  group: recetario-store-screenshots-${{ inputs.device || 'all' }}-${{ inputs.locale || 'all' }}
   cancel-in-progress: false
 jobs:
   capture:
@@ -19,7 +24,9 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
+        locale: ${{ fromJSON(inputs.locale == 'all' && '["en","es","ca","de","fr","it","pt"]' || format('["{0}"]', inputs.locale)) }}
         device: ${{ fromJSON(inputs.device == 'all' && '["iphone","iphone-medium","ipad"]' || inputs.device == 'phones' && '["iphone","iphone-medium"]' || format('["{0}"]', inputs.device)) }}
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +35,6 @@ jobs:
       - name: Capture actual native screens
         env:
           RECETARIO_STORE_DEVICE: ${{ matrix.device }}
+          RECETARIO_STORE_LOCALE: ${{ matrix.locale }}
         run: bash ios/build-store-screenshots.sh
       # Capture bytes are in logs; no paid artifacts/cache storage, signing or upload.

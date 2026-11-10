@@ -141,6 +141,7 @@
 "Bolsas de congelación" = "Sacs de congélation";
 "Bolsas para perro" = "Sacs à déjections canines";
 "Boniato" = "Patate douce";
+"Borrador visual" = "Brouillon visuel";
 "Borrador visual experimental del vídeo: confirma ingredientes y acciones. Cantidades, tiempos y raciones no indicados." = "Ébauche visuelle expérimentale de la vidéo : confirmez les ingrédients et les actions. Quantités, durées et portions non indiquées.";
 "Borrador visual experimental. Comprueba ingredientes y acciones con los fotogramas; pueden faltar datos o contener errores." = "Ébauche visuelle expérimentale. Vérifiez les ingrédients et les actions à l’aide des images vidéo ; des données peuvent manquer ou être erronées.";
 "Borrador visual ·" = "Ébauche visuelle ·";
@@ -606,6 +607,7 @@
 "Has alcanzado las lecturas disponibles de hoy. Tus recetas locales siguen disponibles." = "Vous avez épuisé les analyses disponibles aujourd’hui. Vos recettes locales restent disponibles.";
 "Hash no admitido." = "Empreinte non prise en charge.";
 "Hasta 30 min" = "Jusqu’à 30 min";
+"Hasta {p0} min" = "Jusqu’à {p0} min";
 "Hay otra petición de IA en curso. Espera a que termine." = "Une autre requête IA est en cours. Attendez qu’elle se termine.";
 "Hay otra petición en curso. No se ha generado gasto." = "Une autre demande est en cours. Aucun frais n’a été engagé.";
 "Hay peticiones cuyo consumo sigue pendiente de confirmar." = "La consommation de certaines demandes reste à confirmer.";
@@ -1224,6 +1226,7 @@
 "Receta guardada." = "Recette enregistrée.";
 "Receta local no válida." = "Recette locale non valide.";
 "Receta no encontrada." = "Recette introuvable.";
+"Receta para {p0}" = "Recette pour {p0}";
 "Receta propia" = "Recette personnelle";
 "Receta sin foto" = "Recette sans photo";
 "Recetario" = "Carnet de recettes";
@@ -1365,6 +1368,7 @@
 "Tallarines" = "Tagliatelles";
 "También puedes copiar y pegar" = "Vous pouvez aussi copier et coller";
 "Tampones" = "Tampons";
+"Te falta: {p0}" = "Il vous manque : {p0}";
 "Te han invitado a un recetario" = "Vous avez reçu une invitation à un carnet";
 "Tempeh" = "Tempeh";
 "Temporizador del paso" = "Minuteur de l’étape";
@@ -1606,7 +1610,12 @@
 "y acepta" = "et acceptez";
 "youtu.be" = "youtu.be";
 "youtube.com" = "youtube.com";
+"{p0} acciones sugeridas" = "{p0} actions suggérées";
+"{p0} ingredientes" = "{p0} ingrédients";
+"{p0} pasos" = "{p0} étapes";
+"{p0} raciones" = "{p0} portions";
 "{p0} temporizador del paso {p1}" = "{p0} le minuteur de l’étape {p1}";
+"{p0}% disponible este mes" = "{p0}% disponible ce mois-ci";
 "· Archivada" = "· Archivée";
 "· Despensa descontada" = "· Réserves déduites";
 "· Habitual" = "· Habituel";

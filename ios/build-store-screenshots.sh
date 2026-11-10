@@ -19,6 +19,12 @@ PY
 )
 mkdir -p build
 node -e 'const fs=require("fs"),crypto=require("crypto");const h=crypto.createHash("sha256").update(fs.readFileSync("Resources/OfflineApp/bundle-manifest.json")).digest("hex"),cfg=JSON.parse(fs.readFileSync("testflight.json"));if(h!==cfg.commonBundleManifestSHA256)throw Error("Unexpected release bundle");'
+python3 - <<'PY'
+import json, os, pathlib
+locale=os.environ.get('RECETARIO_STORE_LOCALE','en')
+if locale not in ['en','es','ca','de','fr','it','pt']: raise ValueError('Unsupported capture locale')
+pathlib.Path('StoreScreenshotTests/StoreLocale.json').write_text(json.dumps({'locale':locale}))
+PY
 xcodegen generate
 xcrun simctl boot "$DEVICE_ID" || true
 xcrun simctl bootstatus "$DEVICE_ID" -b > build/store-boot.log 2>&1 &
