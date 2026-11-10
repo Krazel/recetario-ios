@@ -20,7 +20,14 @@ xcrun simctl bootstatus "$DEVICE_ID" -b > build/simulator-boot.log 2>&1 &
 BOOT_PID=$!
 # Compile while the clean runner performs its first simulator migration.
 xcodebuild -project Recetario.xcodeproj -scheme Recetario -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build-for-testing
-wait "$BOOT_PID"
+if ! wait "$BOOT_PID"; then
+  # A fresh runner can fail its first SpringBoard boot. Retry only this empty
+  # test simulator once; no app data or signing environment is involved.
+  tail -n 15 build/simulator-boot.log
+  xcrun simctl shutdown "$DEVICE_ID" || true
+  xcrun simctl boot "$DEVICE_ID"
+  xcrun simctl bootstatus "$DEVICE_ID" -b
+fi
 tail -n 30 build/simulator-boot.log
 xcodebuild -project Recetario.xcodeproj -scheme Recetario -configuration Debug -sdk iphonesimulator -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO -derivedDataPath build -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO "${TEST_FILTER[@]}" test-without-building
 echo 'Unsigned simulator app: build/Build/Products/Debug-iphonesimulator/Recetario.app'
