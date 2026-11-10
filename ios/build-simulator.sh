@@ -8,7 +8,9 @@ xcodebuild -version
 export RECETARIO_SDK_MAJOR=$(xcrun --sdk iphonesimulator --show-sdk-version | cut -d. -f1)
 xcrun simctl list devices available --json > /tmp/recetario-simulators.json
 DEVICE_ID=$(python3 -c 'import json,os; d=json.load(open("/tmp/recetario-simulators.json")); print(next(x["udid"] for runtime,devices in d["devices"].items() if "iOS-"+os.environ["RECETARIO_SDK_MAJOR"]+"-" in runtime for x in devices if "iPhone" in x["name"]))')
-TEST_FILTER=()
+# macOS Bash3.2 treats an empty array as unset under nounset. Name the complete
+# test target explicitly instead of expanding an empty optional argument list.
+TEST_FILTER=(-only-testing:RecetarioTests)
 case "${RECETARIO_TEST_SCOPE:-all}" in
   all|'') ;;
   webview) TEST_FILTER=(-only-testing:RecetarioTests/OfflineAppTests) ;;
