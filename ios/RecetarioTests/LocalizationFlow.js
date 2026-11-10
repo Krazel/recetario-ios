@@ -20,7 +20,7 @@ if(!backup.books.flatMap(b=>b.recipes).some(r=>r.title==='Original conservado'))
 const original=(await window.__recetarioExport()).books.flatMap(b=>b.recipes).find(r=>r.title==='Original conservado');
 await click('.bottom-nav button:first-child');await wait(()=>document.querySelector('.library-toolbar'),'library');contained('.library-toolbar');
 if(![...document.querySelector('.category-filter').options].some(option=>option.value==='Sin clasificar'))throw Error('Localized category changed its stored value');
-set('.category-filter','Sin clasificar');await wait(()=>document.querySelector('.recipe-card'),'canonical category filter');set('.category-filter','Todas');
+set('.category-filter','Sin clasificar');if(document.querySelector('.category-filter').value!=='Sin clasificar')throw Error('Canonical category selection failed');set('.category-filter','Todas');
 for(const image of document.querySelectorAll('.recisave-lockup img'))await wait(()=>image.complete&&image.naturalWidth>0,'A4 image');
 if(document.querySelectorAll('.masthead img[alt="ReciSave"]').length!==1)throw Error('Missing or duplicated wordmark');
 const iconBox=document.querySelector('.masthead .recisave-icon').getBoundingClientRect(),wordBox=document.querySelector('.masthead .recisave-wordmark').getBoundingClientRect();
