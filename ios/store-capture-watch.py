@@ -25,7 +25,8 @@ if mode == 'emit':
     sys.exit(0)
 if mode != 'watch':
     raise ValueError('Unknown mode')
-manifest = {'family': family, 'simulatorId': device, 'sourceCommit': os.environ.get('GITHUB_SHA', ''), 'appSourceCommit': '4fff9bc6444838ba3c93188a9b9222894f44f767', 'version': '0.3.1', 'build': '3', 'capture': 'xcrun simctl io screenshot (full device, original PNG and JPEG)', 'fixture': 'own text and existing approved art crops; no AI calls', 'screens': []}
+release = json.loads(pathlib.Path('testflight.json').read_text())
+manifest = {'family': family, 'simulatorId': device, 'sourceCommit': os.environ.get('GITHUB_SHA', ''), 'appSourceCommit': os.environ.get('GITHUB_SHA', ''), 'version': release['marketingVersion'], 'build': release['buildNumber'], 'capture': 'xcrun simctl io screenshot (full device, original PNG and JPEG)', 'fixture': 'own text and existing approved art crops; no AI calls', 'screens': []}
 container = None
 last = None
 deadline = time.time() + 42 * 60

@@ -18,7 +18,7 @@ print(selected['udid'])
 PY
 )
 mkdir -p build
-node -e 'const fs=require("fs"),crypto=require("crypto");const h=crypto.createHash("sha256").update(fs.readFileSync("Resources/OfflineApp/bundle-manifest.json")).digest("hex");if(h!=="6910548d1623b08f3433762b93537582b23737f9b99d61a9f76dc4f349604cef")throw Error("Unexpected release bundle");'
+node -e 'const fs=require("fs"),crypto=require("crypto");const h=crypto.createHash("sha256").update(fs.readFileSync("Resources/OfflineApp/bundle-manifest.json")).digest("hex"),cfg=JSON.parse(fs.readFileSync("testflight.json"));if(h!==cfg.commonBundleManifestSHA256)throw Error("Unexpected release bundle");'
 xcodegen generate
 xcrun simctl boot "$DEVICE_ID" || true
 xcrun simctl bootstatus "$DEVICE_ID" -b > build/store-boot.log 2>&1 &
