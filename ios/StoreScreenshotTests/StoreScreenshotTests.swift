@@ -4,7 +4,19 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class StoreScreenshotTests: XCTestCase {
+    private var appWebView: WKWebView?
     private func capture(_ name: String) async throws {
+        // A DOM update alone can precede WebKit's presented frame. Flush through
+        // afterScreenUpdates before asking simctl for the actual device image.
+        let web=try XCTUnwrap(appWebView),configuration=WKSnapshotConfiguration()
+        configuration.afterScreenUpdates=true
+        let _: UIImage = try await withCheckedThrowingContinuation { continuation in
+            web.takeSnapshot(with:configuration) { image,error in
+                if let image { continuation.resume(returning:image) }
+                else { continuation.resume(throwing:error ?? NSError(domain:"StoreCapture",code:3)) }
+            }
+        }
+        try await Task.sleep(nanoseconds:700_000_000)
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let request = documents.appendingPathComponent("recetario-store-request.json")
         let ack = documents.appendingPathComponent("recetario-store-ack.json")
@@ -27,6 +39,7 @@ import WebKit
         window.rootViewController=controller; window.makeKeyAndVisible(); controller.loadViewIfNeeded()
         defer { window.isHidden=true; window.rootViewController=nil }
         let web=try XCTUnwrap(controller.view.subviews.compactMap{$0 as? WKWebView}.first)
+        appWebView=web
         for _ in 0..<240 {
             if (try? await web.evaluateJavaScript("window.__recetarioImportReady===1")) as? Bool == true { break }
             try await Task.sleep(nanoseconds:250_000_000)

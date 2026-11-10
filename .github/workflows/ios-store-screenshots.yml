@@ -5,7 +5,7 @@ on:
       device:
         description: Native screenshot device
         type: choice
-        options: [all, iphone, iphone-medium, ipad]
+        options: [all, phones, iphone, iphone-medium, ipad]
         default: all
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: ${{ fromJSON(inputs.device == 'all' && '["iphone","iphone-medium","ipad"]' || format('["{0}"]', inputs.device)) }}
+        device: ${{ fromJSON(inputs.device == 'all' && '["iphone","iphone-medium","ipad"]' || inputs.device == 'phones' && '["iphone","iphone-medium"]' || format('["{0}"]', inputs.device)) }}
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
