@@ -51,9 +51,16 @@ if(window.__recetarioLanguage.get()!==code)throw Error('Recipe language changed 
 await click('.add-recipe-button');await click('.add-menu button:first-child');await wait(()=>document.querySelector('.import-panel'),'import');
 if(document.querySelector('.import-panel .recipe-language select').value!==code)throw Error('Import language default wrong');contained('.import-panel');
 await click('.import-heading button');
+const currentBook=await(await fetch('/api/recetario?book='+encodeURIComponent(book))).json();
+if(!currentBook.kitchen.shopping.some(item=>item.id==='locale-qa-milk')){await post({action:'kitchen',bookId:book,revision:currentBook.kitchen.revision,kitchen:{...currentBook.kitchen,shopping:[...currentBook.kitchen.shopping,{id:'locale-qa-milk',name:'QA milk unchanged',quantity:1,unit:'L',category:'Lácteos y huevos',sources:[],checked:false,emoji:'🥛'}]}});window.dispatchEvent(new Event('focus'));}
 await click('.bottom-nav button:nth-child(2)');await wait(()=>document.querySelector('.planner'),'planner');contained('.workspace');
 if(![...document.querySelectorAll('.add-meal')].some(node=>node.innerText.replace(/\s+/g,' ').startsWith(labels.addBreakfast)))throw Error('Meal action language stale');
+for(const card of document.querySelectorAll('.daily-slot.empty')){const boundary=card.getBoundingClientRect();if(card.scrollWidth>card.clientWidth+2)throw Error(code+' overflowing empty meal card');for(const node of card.querySelectorAll('header,.add-meal,.add-meal>span')){const box=node.getBoundingClientRect();if(box.left<boundary.left-2||box.right>boundary.right+2||node.scrollWidth>node.clientWidth+2)throw Error(code+' clipped empty meal content '+node.className);}}
+const settingsButton=[...document.querySelectorAll('button')].find(node=>node.getAttribute('aria-label')===labels.menuSettings);if(!settingsButton)throw Error('Menu settings missing');settingsButton.click();await wait(()=>document.querySelector('.planner-settings select'),'menu settings');
+for(const [index,option]of [...document.querySelector('.planner-settings select').options].entries()){const expected=new Intl.DateTimeFormat(code,{weekday:'long'}).format(new Date(2024,0,7+index));if(option.value!==String(index)||option.text!==expected)throw Error('Weekday label or stored value changed '+option.text);}
+await click('.planner-settings .page-title-row button');await wait(()=>document.querySelector('.planner:not(.planner-settings)'),'return from settings');
 await click('.bottom-nav button:nth-child(3)');await wait(()=>document.querySelector('.cesta-page'),'shopping');contained('.cesta-page');
+await wait(()=>[...document.querySelectorAll('.cesta-group h3')].some(node=>node.innerText.trim()===labels.dairy),'translated shopping aisle');
 await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'profile');
 contained('.profile-page');
 return {language:code,override,width:innerWidth,manualPreserved:true,legacyPreserved:true,settingsPersisted:true,brand:'A4',stage:'profile'};

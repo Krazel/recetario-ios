@@ -26,7 +26,7 @@ import WebKit
             let initial=try await web.evaluateJavaScript("window.__recetarioLanguage.get()") as? String
             XCTAssertEqual(initial,NativeLocalization.effective(nil))
             for language in NativeLocalization.languages {
-                let labels=["recipes":NativeLocalization.text("Recetas",language:language),"profile":NativeLocalization.text("Perfil",language:language),"addBreakfast":NativeLocalization.text("Añadir {p0}",language:language,values:["p0":NativeLocalization.text("Desayuno",language:language)])]
+                let labels=["recipes":NativeLocalization.text("Recetas",language:language),"profile":NativeLocalization.text("Perfil",language:language),"addBreakfast":NativeLocalization.text("Añadir {p0}",language:language,values:["p0":NativeLocalization.text("Desayuno",language:language)]),"menuSettings":NativeLocalization.text("Ajustes del menú",language:language),"dairy":NativeLocalization.text("Lácteos y huevos",language:language)]
                 let result=try await web.callAsyncJavaScript("return await "+script,arguments:["language":language,"stage":"full","labels":labels],in:nil,contentWorld:.page) as? [String:Any]
                 XCTAssertEqual(result?["language"] as? String,language);XCTAssertEqual(result?["manualPreserved"] as? Bool,true)
                 print("RECETARIO_LANGUAGE_UI=\(result ?? [:])")
