@@ -2,9 +2,9 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-cWP58w_1.js",
-      "bytes": 1345755,
-      "sha256": "564b04954d1bd837aebc33b3faa112872fa29aed2caa630fd4fa465f9c0db72b"
+      "path": "assets/index-DV4R_ra3.js",
+      "bytes": 1346411,
+      "sha256": "a459106a0052f631edf4b107edfff1ca564a177ba8d9e780e1b97ba1724f6d66"
     },
     {
       "path": "assets/index-zVMFSbt0.css",
@@ -309,7 +309,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 465,
-      "sha256": "9023d3e421a871dba76edfc63ea8b258fb2563fba3ceb8451e7c3128abfa632f"
+      "sha256": "d121607dde595fab825f737fdb30a651120c40473b800adddc7290a52fb617f0"
     }
   ]
 }
