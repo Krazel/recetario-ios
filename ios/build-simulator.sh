@@ -14,6 +14,7 @@ TEST_FILTER=(-only-testing:RecetarioTests)
 case "${RECETARIO_TEST_SCOPE:-all}" in
   all|'') ;;
   webview) TEST_FILTER=(-only-testing:RecetarioTests/OfflineAppTests) ;;
+  cooking) TEST_FILTER=(-only-testing:RecetarioTests/LocalizationUITests/testEditorialCookingKeepsControlsAndRecipeAtPhoneAndTabletWidths) ;;
   *) echo 'Unknown test scope'; exit 1 ;;
 esac
 mkdir -p build

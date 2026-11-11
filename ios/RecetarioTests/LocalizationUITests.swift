@@ -7,6 +7,9 @@ import WebKit
     func testEditorialCookingKeepsControlsAndRecipeAtPhoneAndTabletWidths() async throws {
         let resource = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CookingEditorialFlow", withExtension: "js"))
         let script = try String(contentsOf: resource, encoding: .utf8)
+        let bundle = try XCTUnwrap(Bundle.main.url(forResource: "OfflineApp", withExtension: nil))
+        let photo = try Data(contentsOf: bundle.appendingPathComponent("images/tomato-pasta.jpg"))
+        let photoDataURL = "data:image/jpeg;base64," + photo.base64EncodedString()
         for size in [CGSize(width: 320, height: 740), CGSize(width: 390, height: 844), CGSize(width: 820, height: 1080)] {
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -25,7 +28,9 @@ import WebKit
                 try await Task.sleep(nanoseconds: 100_000_000)
             }
             for stage in ["prepare", "controls", "languages"] {
-                let value = try await web.callAsyncJavaScript("return await " + script, arguments: ["stage": stage], in: nil, contentWorld: .page)
+                var arguments = ["stage": stage]
+                if stage == "prepare" { arguments["photoDataURL"] = photoDataURL }
+                let value = try await web.callAsyncJavaScript("return await " + script, arguments: arguments, in: nil, contentWorld: .page)
                 let result = try XCTUnwrap(value as? [String: Any])
                 XCTAssertEqual(result["width"] as? Int, Int(size.width))
                 XCTAssertTrue((result["instructionFont"] as? String)?.contains("Georgia") == true)

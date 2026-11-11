@@ -57,9 +57,13 @@
   const {books} = await post({action:'bootstrap'});
   const bookId = books[0].id;
   const beforeSeed = await (await fetch('/api/recetario?book=' + encodeURIComponent(bookId))).json();
-  const photoResponse = await fetch('/images/tomato-pasta.jpg');
-  check(photoResponse.ok, 'Falta imagen de la receta de prueba');
-  const photoURL = URL.createObjectURL(await photoResponse.blob());
+  const bundledPhoto = typeof photoDataURL === 'string' ? photoDataURL : null;
+  let photoURL = bundledPhoto;
+  if (!photoURL) {
+   const response = await fetch('/images/tomato-pasta.jpg');
+   check(response.ok, 'Falta imagen de la receta de prueba');
+   photoURL = URL.createObjectURL(await response.blob());
+  }
   const image = new Image();
   image.src = photoURL;
   await image.decode();
@@ -72,7 +76,7 @@
   canvas.height = Math.round(240 * image.naturalHeight / image.naturalWidth);
   canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
   const stepPhoto = canvas.toDataURL('image/jpeg', .7);
-  URL.revokeObjectURL(photoURL);
+  if (!bundledPhoto) URL.revokeObjectURL(photoURL);
   const step_media = JSON.stringify({version:1,sourceUrl:'',items:[{step:3,text:longStep,photo:stepPhoto,kind:'photo',selection:'manual',caption:'Pasta servida'}]});
   const fixture = {title, url:'', category:'Platos principales', minutes:20, servings:2, photo, step_media, ingredients:'200 g de pasta\n3 tomates\n1 diente de ajo\n1 cucharada de aceite de oliva\n6 hojas de albahaca\nSal', steps, language:'es', notes:'QA de cocina editorial', favorite:0, tags:'', provenance:'Datos de prueba'};
   const fixtures = [fixture, {...fixture,title:'Pasta sin imagen · QA',photo:'',step_media:'',url:'https://www.youtube.com/watch?v=ReciSaveQA0'}];
