@@ -2,14 +2,14 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-CGLO8kqG.js",
-      "bytes": 1346990,
-      "sha256": "e30320ddef28ae3bde3432afabd860eb55a0c850bfb38714240c94d481fdfc00"
-    },
-    {
       "path": "assets/index-DdDJ-y7y.css",
       "bytes": 363738,
       "sha256": "807cea8536185f0c8d8e16f8e79c4f69d3fe74ad981dfd38d26b2f9f7cae50a5"
+    },
+    {
+      "path": "assets/index-YLB6LUKv.js",
+      "bytes": 1347021,
+      "sha256": "0178e35281dc34d9970a30838824e1421d313a765a6f85ad47c79e472acfc57b"
     },
     {
       "path": "images/brand/icon-192.png",
@@ -309,7 +309,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 465,
-      "sha256": "4f0d0edc038e8b589ae4e6d3731cb452e694720fb040ff13259651af3643b28b"
+      "sha256": "776945a2a92d223ac4851050a21567f90d1ddb53f584199ac82aa9efecc9e718"
     }
   ]
 }

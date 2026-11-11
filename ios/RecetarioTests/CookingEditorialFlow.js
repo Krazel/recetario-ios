@@ -68,9 +68,14 @@
   canvas.height = Math.round(640 * image.naturalHeight / image.naturalWidth);
   canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
   const photo = canvas.toDataURL('image/jpeg', .82);
+  canvas.width = 240;
+  canvas.height = Math.round(240 * image.naturalHeight / image.naturalWidth);
+  canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+  const stepPhoto = canvas.toDataURL('image/jpeg', .7);
   URL.revokeObjectURL(photoURL);
-  const fixture = {title, url:'', category:'Platos principales', minutes:20, servings:2, photo, ingredients:'200 g de pasta\n3 tomates\n1 diente de ajo\n1 cucharada de aceite de oliva\n6 hojas de albahaca\nSal', steps, language:'es', notes:'QA de cocina editorial', favorite:0, tags:'', provenance:'Datos de prueba'};
-  const fixtures = [fixture, {...fixture,title:'Pasta sin imagen · QA',photo:'',url:'https://www.youtube.com/watch?v=ReciSaveQA0'}];
+  const step_media = JSON.stringify({version:1,sourceUrl:'',items:[{step:3,text:longStep,photo:stepPhoto,kind:'photo',selection:'manual',caption:'Pasta servida'}]});
+  const fixture = {title, url:'', category:'Platos principales', minutes:20, servings:2, photo, step_media, ingredients:'200 g de pasta\n3 tomates\n1 diente de ajo\n1 cucharada de aceite de oliva\n6 hojas de albahaca\nSal', steps, language:'es', notes:'QA de cocina editorial', favorite:0, tags:'', provenance:'Datos de prueba'};
+  const fixtures = [fixture, {...fixture,title:'Pasta sin imagen · QA',photo:'',step_media:'',url:'https://www.youtube.com/watch?v=ReciSaveQA0'}];
   for (const recipe of fixtures) {
    if (!beforeSeed.recipes.some(item => item.title === recipe.title)) await post({action:'save',bookId,recipe});
   }
@@ -127,6 +132,7 @@
   await wait(() => !select('.timer-dock'), 'El dock no permite quitar temporizador');
   await tap('.cooking-progress button:last-child');
   await wait(() => select('.cooking-instruction').textContent === longStep, 'No abrió paso largo');
+  check(select('.cooking-step-photo figcaption')?.textContent === 'Pasta servida', 'No se muestra la foto asociada al paso');
   layout();
   await tap(popup + ' footer .primary');
   await wait(() => !select(popup), 'Terminar no cierra el modo');
