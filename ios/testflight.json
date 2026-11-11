@@ -2,7 +2,7 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.5.1",
+  "marketingVersion": "0.6",
   "buildNumber": "1",
   "lastKnownTestFlight": {
     "version": "0.5.1",
@@ -14,9 +14,9 @@
     "run": "42847981053"
   },
   "distributionAuthorization": {
-    "date": "2026-11-10",
-    "scope": "Human instruction: complete7languages and definitive ReciSave A4; private web and existing internal TestFlight authorized. No externalbeta/AppReview/publicstore/costs/services.",
+    "date": "2026-11-11",
+    "scope": "Human approval of editorial cooking A. Private web and existing internal TestFlight authorized. No external beta, App Review, public store release or new expenses.",
     "physicalQA": "Pending; actual internal beta enables user testing."
   },
-  "commonBundleManifestSHA256": "ef3cc9e0a26f45601e5c18d674a03e04ded3512176b0f5cdf09b338ee0e9c486"
+  "commonBundleManifestSHA256": "a6708882803d363e9f115dcd267407fc10c1429786c88fda8a14b3b9fa06de56"
 }

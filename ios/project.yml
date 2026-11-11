@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.5.1'
+    MARKETING_VERSION: '0.6'
     CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_LANGUAGE: en
     CODE_SIGN_STYLE: Automatic
@@ -44,10 +44,12 @@ targets:
     platform: iOS
     sources:
       - path: RecetarioTests
-        excludes: [CorrectionFlow.js, LocalizationFlow.js]
+        excludes: [CorrectionFlow.js, LocalizationFlow.js, CookingEditorialFlow.js]
       - path: RecetarioTests/CorrectionFlow.js
         buildPhase: resources
       - path: RecetarioTests/LocalizationFlow.js
+        buildPhase: resources
+      - path: RecetarioTests/CookingEditorialFlow.js
         buildPhase: resources
     dependencies:
       - target: Recetario

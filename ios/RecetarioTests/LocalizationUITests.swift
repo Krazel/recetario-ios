@@ -4,6 +4,39 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class LocalizationUITests: XCTestCase {
+    func testEditorialCookingKeepsControlsAndRecipeAtPhoneAndTabletWidths() async throws {
+        let resource = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CookingEditorialFlow", withExtension: "js"))
+        let script = try String(contentsOf: resource, encoding: .utf8)
+        for size in [CGSize(width: 320, height: 740), CGSize(width: 390, height: 844), CGSize(width: 820, height: 1080)] {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let database = try DeviceDatabase(file: folder.appendingPathComponent("cooking.sqlite"))
+            let controller = try OfflineAppController(database: database)
+            let window = UIWindow(frame: CGRect(origin: .zero, size: size))
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            controller.loadViewIfNeeded()
+            controller.view.frame = CGRect(origin: .zero, size: size)
+            controller.view.layoutIfNeeded()
+            defer { window.isHidden = true }
+            let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
+            for _ in 0..<240 {
+                if (try? await web.evaluateJavaScript("!!window.__recetarioLanguage && !!document.querySelector('.library-toolbar')")) as? Bool == true { break }
+                try await Task.sleep(nanoseconds: 100_000_000)
+            }
+            for stage in ["prepare", "controls", "languages"] {
+                let value = try await web.callAsyncJavaScript("return await " + script, arguments: ["stage": stage], in: nil, contentWorld: .page)
+                let result = try XCTUnwrap(value as? [String: Any])
+                XCTAssertEqual(result["width"] as? Int, Int(size.width))
+                XCTAssertTrue((result["instructionFont"] as? String)?.contains("Georgia") == true)
+                print("RECETARIO_COOKING_QA=\(stage):\(result)")
+                if stage != "languages" {
+                    try await snapshot(web, name: "cooking-a-\(stage)-\(Int(size.width))")
+                }
+            }
+        }
+    }
+
     private func snapshot(_ web: WKWebView, name: String) async throws {
         let config=WKSnapshotConfiguration();config.afterScreenUpdates=true
         let image:UIImage=try await withCheckedThrowingContinuation { continuation in web.takeSnapshot(with: config) { image,error in if let image { continuation.resume(returning:image) } else { continuation.resume(throwing:error ?? NSError(domain:"LocaleSnapshot",code:1)) } } }
