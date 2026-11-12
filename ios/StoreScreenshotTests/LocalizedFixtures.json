@@ -24,7 +24,8 @@
     "labels": {
       "Cocinar": "Cook",
       "Cerrar modo cocinar": "Close cooking mode",
-      "Mi despensa": "My pantry"
+      "Mi despensa": "My pantry",
+      "Compartir enlaces": "Share links"
     }
   },
   "es": {
@@ -52,7 +53,8 @@
     "labels": {
       "Cocinar": "Cocinar",
       "Cerrar modo cocinar": "Cerrar modo cocinar",
-      "Mi despensa": "Mi despensa"
+      "Mi despensa": "Mi despensa",
+      "Compartir enlaces": "Compartir enlaces"
     }
   },
   "ca": {
@@ -80,7 +82,8 @@
     "labels": {
       "Cocinar": "Cuinar",
       "Cerrar modo cocinar": "Tancar el mode cuina",
-      "Mi despensa": "El meu rebost"
+      "Mi despensa": "El meu rebost",
+      "Compartir enlaces": "Compartir enllaços"
     }
   },
   "de": {
@@ -108,7 +111,8 @@
     "labels": {
       "Cocinar": "Kochen",
       "Cerrar modo cocinar": "Kochmodus schließen",
-      "Mi despensa": "Mein Vorrat"
+      "Mi despensa": "Mein Vorrat",
+      "Compartir enlaces": "Links teilen"
     }
   },
   "fr": {
@@ -136,7 +140,8 @@
     "labels": {
       "Cocinar": "Cuisiner",
       "Cerrar modo cocinar": "Fermer le mode cuisine",
-      "Mi despensa": "Mes réserves"
+      "Mi despensa": "Mes réserves",
+      "Compartir enlaces": "Partager des liens"
     }
   },
   "it": {
@@ -164,7 +169,8 @@
     "labels": {
       "Cocinar": "Cucina",
       "Cerrar modo cocinar": "Chiudi modalità cucina",
-      "Mi despensa": "La mia dispensa"
+      "Mi despensa": "La mia dispensa",
+      "Compartir enlaces": "Condividi link"
     }
   },
   "pt": {
@@ -192,7 +198,8 @@
     "labels": {
       "Cocinar": "Cozinhar",
       "Cerrar modo cocinar": "Fechar modo de cozinha",
-      "Mi despensa": "A minha despensa"
+      "Mi despensa": "A minha despensa",
+      "Compartir enlaces": "Partilhar ligações"
     }
   }
 }

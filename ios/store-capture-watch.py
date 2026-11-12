@@ -5,7 +5,7 @@ mode, device, family, output = sys.argv[1:]
 out = pathlib.Path(output).resolve()
 out.mkdir(parents=True, exist_ok=True)
 accepted = {'iphone': {(1320, 2868), (1290, 2796), (1260, 2736)}, 'iphone-medium': {(1179, 2556), (1206, 2622)}, 'ipad': {(2064, 2752), (2048, 2732)}}
-names = ['01-recetas', '02-receta', '03-cocinar', '04-menu', '05-compra', '06-despensa']
+names = ['01-recetas', '02-receta', '03-cocinar', '04-menu', '05-compra', '06-despensa', '07-redes']
 languages = ['en', 'es', 'ca', 'de', 'fr', 'it', 'pt']
 chosen = os.environ['RECETARIO_STORE_LOCALE']
 locales = languages if chosen == 'all' else [chosen]
@@ -15,7 +15,7 @@ if mode == 'emit':
     for locale in locales:
         directory = out / locale
         manifest = json.loads((directory / 'manifest.json').read_text())
-        if len(manifest['screens']) != 6:
+        if [screen['name'] for screen in manifest['screens']] != names:
             raise ValueError('Incomplete native capture set')
         print('RECETARIO_STORE_MANIFEST=' + json.dumps(manifest, separators=(',', ':')), flush=True)
         for screen in manifest['screens']:

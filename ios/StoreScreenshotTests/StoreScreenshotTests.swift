@@ -72,5 +72,13 @@ import WebKit
         try await capture("05-compra")
         _ = try await web.callAsyncJavaScript("await document.querySelector('.bottom-nav button:last-child').click();await window.__storeTap(window.__storeLabels['Mi despensa']);return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("06-despensa")
+        let shareGuide = """
+        document.querySelector('.bottom-nav button:last-child').click();
+        await window.__storeTap(window.__storeLabels['Compartir enlaces']);
+        await window.__storeWait(() => document.querySelector('.share-guide-dialog .share-guide-steps'));
+        return true;
+        """
+        _ = try await web.callAsyncJavaScript(shareGuide, arguments: [:], in: nil, contentWorld: .page)
+        try await capture("07-redes")
     }
 }
