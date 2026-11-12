@@ -93,7 +93,10 @@ import AVFoundation
             return await ai.status()
         case "ai-request":
             let values=try await database.keyValues()
-            guard DeviceAIConsent.granted(values[DeviceAIConsent.key]) else { throw LocalRecipeError.invalid("Da permiso antes de enviar contenido a la ayuda de IA. Tus recetas locales siguen disponibles.") }
+            guard let path = body["path"] as? String, let scope = DeviceAIConsent.scope(for: path),
+                  DeviceAIConsent.granted(values[DeviceAIConsent.key], scope: scope) else {
+                throw LocalRecipeError.invalid("Da permiso antes de enviar contenido a la ayuda de IA. Tus recetas locales siguen disponibles.")
+            }
             return try await ai.request(body)
         case "recognize":
             guard let images = body["images"] as? [String], images.count <= 12 else { throw LocalRecipeError.invalid("Demasiadas imágenes.") }

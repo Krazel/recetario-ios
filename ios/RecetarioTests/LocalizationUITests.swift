@@ -8,8 +8,15 @@ import WebKit
         let resource = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CookingEditorialFlow", withExtension: "js"))
         let script = try String(contentsOf: resource, encoding: .utf8)
         let bundle = try XCTUnwrap(Bundle.main.url(forResource: "OfflineApp", withExtension: nil))
-        let photo = try Data(contentsOf: bundle.appendingPathComponent("images/tomato-pasta.jpg"))
-        let photoDataURL = "data:image/jpeg;base64," + photo.base64EncodedString()
+        let image = try XCTUnwrap(UIImage(contentsOfFile: bundle.appendingPathComponent("images/tomato-pasta.jpg").path))
+        let size = CGSize(width: 220, height: 220 * image.size.height / image.size.width)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let fixture = UIGraphicsImageRenderer(size: size, format: format).jpegData(withCompressionQuality: 0.55) { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
+        let photoDataURL = "data:image/jpeg;base64," + fixture.base64EncodedString()
+        XCTAssertLessThan(photoDataURL.count, 40_000)
         for size in [CGSize(width: 320, height: 740), CGSize(width: 390, height: 844), CGSize(width: 820, height: 1080)] {
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -37,6 +44,13 @@ import WebKit
                 print("RECETARIO_COOKING_QA=\(stage):\(result)")
                 if stage != "languages" {
                     try await snapshot(web, name: "cooking-a-\(stage)-\(Int(size.width))")
+                }
+            }
+            if size.width == 390 {
+                for stage in ["grid", "shopping", "profile"] {
+                    let result = try await web.callAsyncJavaScript("return await " + script, arguments: ["stage": stage], in: nil, contentWorld: .page)
+                    print("RECETARIO_SURFACE_QA=\(stage):\(String(describing: result))")
+                    try await snapshot(web, name: "recisave-\(stage)-390")
                 }
             }
         }

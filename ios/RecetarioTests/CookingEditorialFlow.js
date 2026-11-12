@@ -71,11 +71,11 @@
   canvas.width = 640;
   canvas.height = Math.round(640 * image.naturalHeight / image.naturalWidth);
   canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-  const photo = canvas.toDataURL('image/jpeg', .82);
+  const photo = bundledPhoto ?? canvas.toDataURL('image/jpeg', .82);
   canvas.width = 240;
   canvas.height = Math.round(240 * image.naturalHeight / image.naturalWidth);
   canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-  const stepPhoto = canvas.toDataURL('image/jpeg', .7);
+  const stepPhoto = bundledPhoto ?? canvas.toDataURL('image/jpeg', .7);
   if (!bundledPhoto) URL.revokeObjectURL(photoURL);
   const step_media = JSON.stringify({version:1,sourceUrl:'',items:[{step:3,text:longStep,photo:stepPhoto,kind:'photo',selection:'manual',caption:'Pasta servida'}]});
   const fixture = {title, url:'', category:'Platos principales', minutes:20, servings:2, photo, step_media, ingredients:'200 g de pasta\n3 tomates\n1 diente de ajo\n1 cucharada de aceite de oliva\n6 hojas de albahaca\nSal', steps, language:'es', notes:'QA de cocina editorial', favorite:0, tags:'', provenance:'Datos de prueba'};
@@ -159,6 +159,41 @@
   }
   await window.__recetarioLanguage.set('es');
   return layout();
+ }
+ if (stage === 'grid') {
+  if(select(popup))await close();
+  const closeDetail=select('.recipe-sheet .sheet-header button');
+  closeDetail?.click();
+  const grid=await wait(()=>select('.library-card-grid:has(.recipe-card)'), 'Falta cuadrícula de recetas');
+  check(getComputedStyle(grid).gridTemplateColumns.split(' ').length===2, 'El móvil no muestra dos columnas');
+  const search=select('.library-toolbar input[type=search]');
+  const nav=select('.bottom-nav');
+  const bottom=nav.getBoundingClientRect().bottom;
+  for(let cycle=0;cycle<2;cycle++){
+   search.focus();
+   search.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+   await wait(()=>document.activeElement!==search&&!document.documentElement.classList.contains('keyboard-open'), 'La búsqueda conserva el foco o el estado del teclado');
+   check(Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1, 'Cambió el anclaje del menú inferior');
+  }
+  return {columns:2,searchFocusCycles:2,softKeyboardVerified:false};
+ }
+ if (stage === 'shopping') {
+  const {bookId}=window.__cookingFixture;
+  const saved=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
+  const ingredients=[['Leche',1,'L','Lácteos y huevos'],['Huevos',4,'ud','Lácteos y huevos'],['Tomates',2,'ud','Frutas y verduras']];
+  await post({action:'kitchen',bookId,revision:saved.kitchen.revision,kitchen:{...saved.kitchen,shopping:ingredients.map(([name,quantity,unit,category])=>({id:crypto.randomUUID(),name,quantity,unit,category,sources:['Añadido a mano'],checked:false}))}});
+  window.dispatchEvent(new Event('focus'));
+  await tap('.bottom-nav button:nth-child(3)');
+  const buy=await wait(()=>select('.cesta-page:has(.cesta-item)'), 'No se abrió la compra con productos');
+  check(!buy.querySelector('.cesta-heading')&&buy.querySelectorAll('.cesta-nav button').length===3, 'Cabecera de compra incorrecta');
+  return {products:buy.querySelectorAll('.cesta-item').length};
+ }
+ if (stage === 'profile') {
+  await tap('.bottom-nav button:last-child');
+  await wait(()=>select('.profile-settings'), 'No se abrió Perfil');
+  check(!select('.backup-actions,.ai-privacy-controls'), 'Se conservaron tarjetas de Perfil');
+  check(!select('.profile-settings select'), 'El selector se muestra antes de tocar Idioma');
+  return {compactSettings:true};
  }
  throw Error('Etapa de prueba desconocida: ' + stage);
 })()

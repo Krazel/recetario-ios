@@ -9,12 +9,12 @@ const set=(selector,value)=>{const node=document.querySelector(selector);if(!nod
 const post=async body=>{const r=await fetch('/api/recetario',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Error(data.error);return data;};
 await wait(()=>window.__recetarioLanguage&&document.querySelector('.bottom-nav'),'app startup');
 if(stageName==='home'){await click('.bottom-nav button:first-child');await wait(()=>document.querySelector('.library-toolbar'),'home');contained('.library-toolbar');return {language:document.documentElement.lang,stage:'home'};}
-await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'Settings');
-set('.language-settings select',code);await wait(()=>window.__recetarioLanguage.get()===code&&document.querySelector('.language-settings select')?.value===code,'persist language');
+await click('.bottom-nav button:last-child');await click('.profile-settings > button:first-child');await wait(()=>document.querySelector('[role=dialog] select'),'Settings');
+set('[role=dialog] select',code);await wait(()=>window.__recetarioLanguage.get()===code&&!document.querySelector('[role=dialog] select'),'persist language');
 if(document.documentElement.lang!==code)throw Error('Document language stale');
 if(document.querySelector('.bottom-nav button:first-child').innerText.trim()!==labels.recipes||document.querySelector('.bottom-nav button:last-child').innerText.trim()!==labels.profile)throw Error('Navigation language stale');
 for(const icon of document.querySelectorAll('.bottom-nav button>svg')){const box=icon.getBoundingClientRect();if(box.width<20||box.height<20)throw Error(code+' navigation icon shrank with long text');}
-contained('.language-settings');contained('.profile-page');
+contained('.profile-settings');contained('.profile-page');
 const {books}=await(await fetch('/api/recetario')).json(),book=books[0].id;
 let backup=await window.__recetarioExport();
 if(!backup.books.flatMap(b=>b.recipes).some(r=>r.title==='Original conservado'))await post({action:'save',bookId:book,recipe:{title:'Original conservado',url:'https://example.com/original',category:'Sin clasificar',ingredients:'200 g de arroz\n2 tomates',steps:'Cocer 10 minutos.\nServir.',notes:'Notas del autor. No traducir.',minutes:10,favorite:0,servings:2,tags:'',provenance:'Fuente original',photo:'art:pasta'}});
@@ -69,9 +69,9 @@ await click('.cesta-action-row button:nth-child(2)');await wait(()=>document.que
 const preview=document.querySelector('.cesta-paste-preview');if(!preview.innerText.includes('2 '+productCases[2])||!preview.querySelector('img')?.getAttribute('src')?.includes('product_oil.png'))throw Error('Pasted unit/art wrong '+preview.innerText);contained('.cesta-dialog');await click('.cesta-dialog .primary');await wait(()=>!document.querySelector('.cesta-dialog'),'saved pasted list');
 const savedKitchen=(await(await fetch('/api/recetario?book='+encodeURIComponent(book))).json()).kitchen;
 if(!savedKitchen.shopping.some(item=>item.id==='locale-product-1'&&item.name===productCases[1]&&item.unit==='cda'&&item.quantity===4))throw Error('Pasted quantity/unit did not consolidate and persist without changing original name');
-await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'profile');
+await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.profile-settings > button:first-child'),'profile');
 await click('.profile-links button:nth-child(2)');await wait(()=>document.querySelector('.pantry-products'),'pantry');
 for(const [index,name]of productCases.slice(0,2).entries()){const row=[...document.querySelectorAll('.pantry-product')].find(node=>node.querySelector('strong')?.innerText===name);const image=row?.querySelector('img');if(!image?.getAttribute('src')?.includes(index?'product_oil.png':'product_eggs.png'))throw Error('Pantry localized artwork lost '+name);await wait(()=>image.complete&&image.naturalWidth>0,'pantry image');}
-await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.language-settings select'),'profile after pantry');contained('.profile-page');
+await click('.bottom-nav button:last-child');await wait(()=>document.querySelector('.profile-settings > button:first-child'),'profile after pantry');contained('.profile-page');
 return {language:code,override,width:innerWidth,manualPreserved:true,legacyPreserved:true,settingsPersisted:true,brand:'A4',stage:'profile'};
 })()

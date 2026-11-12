@@ -9,5 +9,9 @@ final class DeviceAIConsentTests: XCTestCase {
         XCTAssertFalse(DeviceAIConsent.granted("{\"version\":\"openai-v1\",\"granted\":false}"))
         XCTAssertFalse(DeviceAIConsent.granted("{\"version\":\"openai-v1\",\"granted\":1}"))
         XCTAssertTrue(DeviceAIConsent.granted("{\"version\":\"openai-v1\",\"granted\":true}"))
+        let recipes = "{\"version\":\"openai-v1\",\"granted\":true,\"scopes\":[\"recipes\"]}"
+        XCTAssertTrue(DeviceAIConsent.granted(recipes, scope: "recipes"))
+        XCTAssertFalse(DeviceAIConsent.granted(recipes, scope: "assistant"))
+        XCTAssertFalse(DeviceAIConsent.granted("{\"version\":\"openai-v1\",\"granted\":true,\"scopes\":null}"))
     }
 }

@@ -85,11 +85,12 @@ import WebKit
             XCTAssertEqual(result?["width"] as? Int, Int(size.width))
             if size.width == 320 {
                 let consent = """
-                document.querySelector('.import-heading button').click();await new Promise(r=>setTimeout(r,100));
-                [...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Perfil').click();await new Promise(r=>setTimeout(r,100));
-                const permission=[...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Permiso de ayuda de IA');
-                for(let i=0;i<200&&permission.disabled;i++)await new Promise(r=>setTimeout(r,25));
-                permission.click();for(let i=0;i<200;i++){if(document.querySelector('.ai-consent-dialog'))break;await new Promise(r=>setTimeout(r,25));}
+                const prepare=()=>[...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Preparar receta'&&!b.disabled);
+                for(let i=0;i<200&&!prepare();i++)await new Promise(r=>setTimeout(r,25));
+                if(!prepare())throw Error('Falta acción de preparar receta');
+                prepare().click();
+                for(let i=0;i<200&&!document.querySelector('.ai-consent-dialog');i++)await new Promise(r=>setTimeout(r,25));
+                if(!document.querySelector('.ai-consent-dialog'))throw Error('Falta consentimiento en contexto');
                 await new Promise(r=>setTimeout(r,200));return true;
                 """
                 _ = try await web.callAsyncJavaScript(consent, arguments: [:], in: nil, contentWorld: .page)
@@ -99,6 +100,8 @@ import WebKit
                 try await logSnapshot(web, name: "ai-consent-320-bottom")
                 let guide = """
                 [...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Seguir sin IA').click();await new Promise(r=>setTimeout(r,250));
+                document.querySelector('.import-heading button').click();await new Promise(r=>setTimeout(r,150));
+                [...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Perfil').click();await new Promise(r=>setTimeout(r,150));
                 [...document.querySelectorAll('button')].find(b=>b.innerText.trim().startsWith('Compartir enlaces')).click();
                 for(let i=0;i<200;i++){if(document.querySelector('.share-guide-dialog'))break;await new Promise(r=>setTimeout(r,25));}
                 await new Promise(r=>setTimeout(r,150));return true;
