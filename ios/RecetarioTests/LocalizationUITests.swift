@@ -4,6 +4,34 @@ import WebKit
 @testable import Recetario
 
 @MainActor final class LocalizationUITests: XCTestCase {
+    func testSharedHeaderAlignmentAcrossTabs() async throws {
+        let resource = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CookingEditorialFlow", withExtension: "js"))
+        let script = try String(contentsOf: resource, encoding: .utf8)
+        for width in [320, 390, 430, 1100] {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let database = try DeviceDatabase(file: folder.appendingPathComponent("header.sqlite"))
+            let controller = try OfflineAppController(database: database)
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: CGFloat(width), height: 740))
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            controller.loadViewIfNeeded()
+            controller.view.frame = window.bounds
+            controller.view.layoutIfNeeded()
+            defer { window.isHidden = true }
+            let web = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? WKWebView }.first)
+            for _ in 0..<240 {
+                if (try? await web.evaluateJavaScript("!!window.__recetarioLanguage && !!document.querySelector('.library-toolbar')")) as? Bool == true { break }
+                try await Task.sleep(nanoseconds: 100_000_000)
+            }
+            let result = try await web.callAsyncJavaScript("return await " + script, arguments: ["stage": "header"], in: nil, contentWorld: .page)
+            let metrics = try XCTUnwrap(result as? [String: Any])
+            XCTAssertEqual(metrics["viewport"] as? Int, width)
+            print("RECETARIO_HEADER_QA=\(width):\(metrics)")
+            if width == 390 { try await snapshot(web, name: "recisave-header-390") }
+        }
+    }
+
     func testEditorialCookingKeepsControlsAndRecipeAtPhoneAndTabletWidths() async throws {
         let resource = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "CookingEditorialFlow", withExtension: "js"))
         let script = try String(contentsOf: resource, encoding: .utf8)

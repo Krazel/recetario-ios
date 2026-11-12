@@ -5,7 +5,7 @@ on:
       test_scope:
         description: Test suite
         type: choice
-        options: [all, webview, cooking]
+        options: [all, webview, cooking, header]
         default: all
       runner:
         description: Public standard macOS runner

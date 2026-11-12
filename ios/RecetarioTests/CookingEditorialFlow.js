@@ -142,7 +142,13 @@
   await wait(() => !select(popup), 'Terminar no cierra el modo');
   const {bookId,recipes} = window.__cookingFixture;
   const current = await (await fetch('/api/recetario?book=' + encodeURIComponent(bookId))).json();
-  check(recipes.every(recipe => JSON.stringify(current.recipes.find(item => item.id === recipe.id)) === JSON.stringify(recipe)), 'Cocinar modificó una receta');
+  for (const recipe of recipes) {
+   const saved = current.recipes.find(item => item.id === recipe.id);
+   check(saved, 'La receta de prueba dejó de estar disponible');
+   const fields = new Set([...Object.keys(recipe), ...Object.keys(saved)]);
+   const changed = [...fields].filter(field => JSON.stringify(recipe[field]) !== JSON.stringify(saved[field]));
+   check(changed.length === 0, 'Cocinar modificó estos campos: ' + changed.join(', '));
+  }
   const detailClose = document.querySelector('.recipe-sheet .sheet-header button');
   if (detailClose) detailClose.click();
   await openRecipe('Pasta sin imagen · QA');
@@ -163,7 +169,7 @@
  if (stage === 'grid') {
   if(select(popup))await close();
   const closeDetail=select('.recipe-sheet .sheet-header button');
-  closeDetail?.click();
+  if(closeDetail){closeDetail.click();await wait(()=>!select('.recipe-sheet .sheet-header button'),'La ficha no se cerró');}
   const grid=await wait(()=>select('.library-card-grid:has(.recipe-card)'), 'Falta cuadrícula de recetas');
   check(getComputedStyle(grid).gridTemplateColumns.split(' ').length===2, 'El móvil no muestra dos columnas');
   const search=select('.library-toolbar input[type=search]');
@@ -171,6 +177,7 @@
   const bottom=nav.getBoundingClientRect().bottom;
   for(let cycle=0;cycle<2;cycle++){
    search.focus();
+   await wait(()=>document.activeElement===search,'La búsqueda no obtuvo foco');
    search.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
    await wait(()=>document.activeElement!==search&&!document.documentElement.classList.contains('keyboard-open'), 'La búsqueda conserva el foco o el estado del teclado');
    check(Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1, 'Cambió el anclaje del menú inferior');
@@ -194,6 +201,42 @@
   check(!select('.backup-actions,.ai-privacy-controls'), 'Se conservaron tarjetas de Perfil');
   check(!select('.profile-settings select'), 'El selector se muestra antes de tocar Idioma');
   return {compactSettings:true};
+ }
+ if (stage === 'header') {
+  await wait(()=>select('.library-toolbar')&&select('.recipe-card,.empty-state'), 'No inició la biblioteca');
+  await document.fonts.ready;
+  const measure=()=>{
+   const header=select('.approved-app > .masthead');
+   const logo=header.querySelector('.recisave-wordmark');
+   const box=header.getBoundingClientRect(), brand=logo.getBoundingClientRect();
+   return {height:box.height,border:box.bottom,logo:brand.top};
+  };
+  const positions={};
+  const sections=['recipes','planner','shopping','profile'];
+  for(const [index,section] of sections.entries()){
+   await tap('.bottom-nav button:nth-child('+(index+1)+')');
+   await wait(()=>select('.approved-app').dataset.section===section, 'No cambió a '+section);
+   positions[section]=measure();
+  }
+  const match=(current,expected)=>Object.keys(expected).every(key=>Math.abs(current[key]-expected[key])<=.75);
+  for(const section of sections)check(match(positions[section],positions.profile), 'Cabecera distinta: '+JSON.stringify(positions));
+  await tap('.bottom-nav button:first-child');
+  const add=select('.masthead .add-recipe-button');
+  const target=add.getBoundingClientRect();
+  const header=select('.approved-app > .masthead').getBoundingClientRect();
+  check(target.width>=44&&target.height>=44,'El área táctil del + es demasiado pequeña');
+  const padding=getComputedStyle(select('.approved-app > .masthead'));
+  const center=(header.top+header.bottom+parseFloat(padding.paddingTop)-parseFloat(padding.paddingBottom))/2;
+  check(Math.abs(target.top+target.height/2-center)<=1,'El + no está centrado');
+  await tap('.masthead .add-recipe-button');
+  await wait(()=>select('.masthead .add-menu button:nth-child(2)'), 'El + no abrió las acciones');
+  check(match(measure(),positions.profile),'Abrir el + desplaza la cabecera');
+  await tap('.masthead .add-recipe-button');
+  await tap('.library-switch button:nth-child(2)');
+  await wait(()=>select('.library-switch button:nth-child(2)[aria-pressed=true]'), 'No abrió Recetarios');
+  check(match(measure(),positions.profile),'Recetarios desplaza la cabecera');
+  await tap('.library-switch button:first-child');
+  return {viewport:innerWidth,positions,addTarget:[target.width,target.height],addActions:2};
  }
  throw Error('Etapa de prueba desconocida: ' + stage);
 })()

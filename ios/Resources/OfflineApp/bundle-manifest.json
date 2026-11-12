@@ -2,12 +2,12 @@
   "format": 1,
   "files": [
     {
-      "path": "assets/index-DduCTNms.css",
-      "bytes": 365293,
-      "sha256": "710d0ddd0ce9d459b93c7c036e37234906a84997d3e19eafd423d74e2e25e7c7"
+      "path": "assets/index-B_erNLPe.css",
+      "bytes": 365252,
+      "sha256": "9884cb1750d0431735b27108ee196b4e52088a47d39bf26611064754afdbe00e"
     },
     {
-      "path": "assets/index-Dj0Wg-H2.js",
+      "path": "assets/index-Lm1Vqgr-.js",
       "bytes": 1353011,
       "sha256": "554cf857191476713029129efd390ec5f2bea229c95f4f1a7424d3506c0519cc"
     },
@@ -309,7 +309,7 @@
     {
       "path": "mobile/index.html",
       "bytes": 465,
-      "sha256": "94ef3a189d772bd532ba2b14402960d7c65e4cbdaf1f72f3c8680e7d42c0b080"
+      "sha256": "724dae3050cdc1bc1cd84581819ae414c0d203cbb503e5887c0a03c92818338b"
     }
   ]
 }
