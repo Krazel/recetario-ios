@@ -187,7 +187,7 @@
  if (stage === 'shopping') {
   const {bookId}=window.__cookingFixture;
   const saved=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
-  const ingredients=[['Leche',1,'L','Lácteos y huevos'],['Huevos',4,'ud','Lácteos y huevos'],['Tomates',2,'ud','Frutas y verduras']];
+  const ingredients=[['Leche',1,'L','Lácteos y huevos'],['Huevos',4,'ud','Lácteos y huevos'],['Tomates',2,'ud','Fruta y verdura']];
   await post({action:'kitchen',bookId,revision:saved.kitchen.revision,kitchen:{...saved.kitchen,shopping:ingredients.map(([name,quantity,unit,category])=>({id:crypto.randomUUID(),name,quantity,unit,category,sources:['Añadido a mano'],checked:false}))}});
   window.dispatchEvent(new Event('focus'));
   await tap('.bottom-nav button:nth-child(3)');
