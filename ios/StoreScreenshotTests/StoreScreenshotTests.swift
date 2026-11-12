@@ -71,6 +71,10 @@ import WebKit
         _ = try await web.callAsyncJavaScript("await document.querySelector('.bottom-nav button:nth-child(3)').click();await window.__storeWait(()=>document.querySelector('.cesta-page'));return true;",arguments:[:],in:nil,contentWorld:.page)
         try await capture("05-compra")
         _ = try await web.callAsyncJavaScript("await document.querySelector('.bottom-nav button:last-child').click();await window.__storeTap(window.__storeLabels['Mi despensa']);return true;",arguments:[:],in:nil,contentWorld:.page)
+        // The iPad sidebar can still be repainting during the switch from Profile.
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            try await Task.sleep(nanoseconds: 2_500_000_000)
+        }
         try await capture("06-despensa")
         let shareGuide = """
         document.querySelector('.bottom-nav button:last-child').click();
