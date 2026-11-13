@@ -75,6 +75,7 @@ import WebKit
                 }
             }
             if size.width == 390 {
+                try await checkNativeKeyboardFrame(web, in: window)
                 for stage in ["grid", "shopping", "profile"] {
                     let result = try await web.callAsyncJavaScript("return await " + script, arguments: ["stage": stage], in: nil, contentWorld: .page)
                     print("RECETARIO_SURFACE_QA=\(stage):\(String(describing: result))")
@@ -82,6 +83,39 @@ import WebKit
                 }
             }
         }
+    }
+
+    private func checkNativeKeyboardFrame(_ web: WKWebView, in window: UIWindow) async throws {
+        let height = web.bounds.height
+        let frame = web.convert(web.bounds, to: window.screen.coordinateSpace)
+        let shown = CGRect(x: frame.minX, y: frame.maxY - 260, width: frame.width, height: 300)
+        let hidden = CGRect(x: frame.minX, y: frame.maxY + 40, width: frame.width, height: 300)
+        func post(_ name: Notification.Name, frame: CGRect) {
+            NotificationCenter.default.post(name: name, object: nil, userInfo: [
+                UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: frame),
+                UIResponder.keyboardIsLocalUserInfoKey: true
+            ])
+        }
+        func waitForBar(hidden: Bool) async throws {
+            let condition = """
+            window.__recetarioIOSViewport?.height === \(Double(height)) &&
+            window.__recetarioIOSViewport?.keyboardVisible === \(hidden) &&
+            document.documentElement.classList.contains('keyboard-open') === \(hidden)
+            """
+            for _ in 0..<100 {
+                if try await web.evaluateJavaScript(condition) as? Bool == true { return }
+                try await Task.sleep(nanoseconds: 20_000_000)
+            }
+            XCTFail("Keyboard visibility did not reach the web view: hidden=\(hidden)")
+        }
+        post(UIResponder.keyboardWillChangeFrameNotification, frame: shown)
+        try await waitForBar(hidden: true)
+        post(UIResponder.keyboardWillChangeFrameNotification, frame: hidden)
+        try await waitForBar(hidden: true)
+        post(UIResponder.keyboardDidChangeFrameNotification, frame: hidden)
+        try await waitForBar(hidden: false)
+        XCTAssertEqual(web.bounds.height, height)
+        print("RECETARIO_KEYBOARD_FRAME_QA=\(height):native notifications verified")
     }
 
     private func snapshot(_ web: WKWebView, name: String) async throws {

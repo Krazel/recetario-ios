@@ -17,6 +17,8 @@ import AVFoundation
     private var pendingText = ""
     private var importReady = false
     private var cooking = false
+    private var keyboardVisible = false
+    private var publishedViewport: (height: CGFloat, keyboardVisible: Bool)?
     private var interfacePreference = "system"
     private var interfaceLanguage: String { NativeLocalization.effective(interfacePreference) }
     private func localized(_ value: String, values: [String: String] = [:]) -> String { NativeLocalization.text(value, language: interfaceLanguage, values: values) }
@@ -42,13 +44,53 @@ import AVFoundation
         webView.translatesAutoresizingMaskIntoConstraints = false; view.addSubview(webView)
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            webView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
         NotificationCenter.default.addObserver(self, selector: #selector(background), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(foreground), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
         loadApp()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        publishViewport()
+    }
+    private func keyboardCoversWebViewBottom(_ note: Notification) -> Bool? {
+        guard let window = view.window,
+              let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return nil }
+        if note.userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool == false { return nil }
+        let keyboard = webView.convert(frame, from: window.screen.coordinateSpace)
+        let overlap = keyboard.intersection(webView.bounds)
+        return !overlap.isNull && overlap.height > 0 && keyboard.maxY >= webView.bounds.maxY
+    }
+    @objc private func keyboardWillChangeFrame(_ note: Notification) {
+        // Keep the bar hidden through the dismissal animation.
+        guard keyboardCoversWebViewBottom(note) == true else { return }
+        keyboardVisible = true
+        publishViewport()
+    }
+    @objc private func keyboardDidChangeFrame(_ note: Notification) {
+        guard let visible = keyboardCoversWebViewBottom(note) else { return }
+        keyboardVisible = visible
+        publishViewport()
+    }
+    @objc private func keyboardDidHide() {
+        keyboardVisible = false
+        publishViewport()
+    }
+    private func publishViewport() {
+        guard let webView, trusted(webView.url), webView.bounds.height > 0 else { return }
+        let height = webView.bounds.height
+        guard publishedViewport?.height != height || publishedViewport?.keyboardVisible != keyboardVisible else { return }
+        publishedViewport = (height, keyboardVisible)
+        webView.callAsyncJavaScript(
+            "window.__recetarioIOSViewport = {height, keyboardVisible}; window.dispatchEvent(new Event('recetario-ios-viewport'));",
+            arguments: ["height": Double(height), "keyboardVisible": keyboardVisible], in: nil, contentWorld: .page
+        ) { _ in }
     }
     private func loadApp() {
         importReady = false
@@ -225,6 +267,8 @@ import AVFoundation
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         view.backgroundColor = LocalRecipeStyle.background
+        publishedViewport = nil
+        publishViewport()
         Task { [weak self] in
             guard let self else { return }
             for _ in 0..<240 {

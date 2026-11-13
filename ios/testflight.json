@@ -2,21 +2,21 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.6.1",
+  "marketingVersion": "0.6.2",
   "buildNumber": "1",
   "lastKnownTestFlight": {
-    "version": "0.6",
+    "version": "0.6.1",
     "build": "1",
     "audience": "internal",
-    "date": "2026-11-12",
+    "date": "2026-11-13",
     "state": "IN_BETA_TESTING",
-    "buildId": "f7e5b842-81be-4084-bd06-a532fdffe9af",
-    "run": "43273869327"
+    "buildId": "5c3feaa3-591b-4008-aaf1-9b159aa080a6",
+    "run": "43345480831"
   },
   "distributionAuthorization": {
     "date": "2026-11-13",
-    "scope": "Owner requested internal TestFlight for the recipe search and shopping fixes.",
+    "scope": "Internal TestFlight retest for the reported recipe search keyboard dismissal issue.",
     "physicalQA": "Pending on iPhone."
   },
-  "commonBundleManifestSHA256": "68c5e062a866a61e0a503a2a020a8eac2f265ae5bc2fa2aae0254a6950e3687e"
+  "commonBundleManifestSHA256": "296fdb890da3230d1102596504b1360d7e928f5fa0df520aa831158f67244ad6"
 }

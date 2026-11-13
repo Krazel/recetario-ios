@@ -182,9 +182,16 @@
   // The hook listens to the real object. Override its measurements during each
   // cycle to reproduce an offset that persists after focusout on mobile WebKit.
   const descriptors=Object.keys(initial).map(key=>[key,Object.getOwnPropertyDescriptor(viewport,key)]);
+  const native=window.__recetarioIOSViewport;
+  const nativeFrame=(height,keyboardVisible)=>{
+   if(height===undefined)delete window.__recetarioIOSViewport;
+   else window.__recetarioIOSViewport={height,keyboardVisible};
+   window.dispatchEvent(new Event('recetario-ios-viewport'));
+  };
   for(const key of Object.keys(initial))Object.defineProperty(viewport,key,{configurable:true,get:()=>visual[key]});
   const move=(height,offsetTop)=>{visual={...initial,height,offsetTop};viewport.dispatchEvent(new Event('resize'));viewport.dispatchEvent(new Event('scroll'));};
   try{
+   nativeFrame(undefined,false);
    for(const key of ['Enter','Escape','blur']){
     search.focus({preventScroll:true});
     await wait(()=>document.activeElement===search,'La búsqueda no obtuvo foco');
@@ -199,14 +206,30 @@
     await wait(()=>Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1,'Cambió el anclaje del menú inferior');
     check(window.scrollY===scroll,'Cerrar búsqueda desplazó la lista');
    }
+   const nativeHeight=native?.height??(bottom-initial.offsetTop);
+   search.focus({preventScroll:true});
+   await wait(()=>document.activeElement===search,'La búsqueda nativa no obtuvo foco');
+   nativeFrame(nativeHeight,true);
+   move(initial.height-240,36);
+   await wait(()=>getComputedStyle(nav).visibility==='hidden','La barra no respetó la apertura nativa del teclado');
+   search.blur();
+   move(initial.height-26,52);
+   await wait(()=>Math.abs(nav.getBoundingClientRect().bottom-nativeHeight-52)<=1,'La barra no siguió el marco nativo durante el cierre');
+   check(getComputedStyle(nav).visibility==='hidden','La barra reapareció antes del fin del cierre nativo');
+   nativeFrame(nativeHeight,false);
+   await wait(()=>getComputedStyle(nav).visibility==='visible','La barra no reapareció al cerrarse el teclado nativo');
+   check(Math.abs(nav.getBoundingClientRect().bottom-visual.offsetTop-nativeHeight)<=1,'El viewport residual dejó elevada la barra nativa');
+   check(window.scrollY===scroll,'Cerrar el teclado nativo desplazó la lista');
   }finally{
    for(const [key,descriptor] of descriptors){if(descriptor)Object.defineProperty(viewport,key,descriptor);else delete viewport[key];}
+   nativeFrame(native?.height,native?.keyboardVisible);
    viewport.dispatchEvent(new Event('resize'));
   }
-  return {columns:2,searchFocusCycles:3,residualOffset:52,navBottomBefore:bottom,navBottomAfter:nav.getBoundingClientRect().bottom,softKeyboardVerified:false};
+  await wait(()=>Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1,'La barra no volvió a su posición original');
+  return {columns:2,searchFocusCycles:4,residualOffset:52,nativeResidualHeight:26,navBottomBefore:bottom,navBottomAfter:nav.getBoundingClientRect().bottom,softKeyboardVerified:false};
  }
  if (stage === 'shopping') {
-  const {bookId}=window.__cookingFixture;
+  const bookId=window.__cookingFixture?.bookId??(await post({action:'bootstrap'})).books[0].id;
   const saved=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
   const canvas=document.createElement('canvas');canvas.width=48;canvas.height=48;
   const context=canvas.getContext('2d');context.fillStyle='#e9c696';context.fillRect(0,0,48,48);
