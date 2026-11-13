@@ -2,21 +2,21 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.6",
+  "marketingVersion": "0.6.1",
   "buildNumber": "1",
   "lastKnownTestFlight": {
-    "version": "0.5.1",
+    "version": "0.6",
     "build": "1",
     "audience": "internal",
-    "date": "2026-11-10",
+    "date": "2026-11-12",
     "state": "IN_BETA_TESTING",
-    "buildId": "c66fc2bd-38b3-44fb-9acd-8f6baef2fce0",
-    "run": "42847981053"
+    "buildId": "f7e5b842-81be-4084-bd06-a532fdffe9af",
+    "run": "43273869327"
   },
   "distributionAuthorization": {
-    "date": "2026-11-11",
-    "scope": "Human approval of editorial cooking A. Private web and existing internal TestFlight authorized. No external beta, App Review, public store release or new expenses.",
-    "physicalQA": "Pending; actual internal beta enables user testing."
+    "date": "2026-11-13",
+    "scope": "Owner requested internal TestFlight for the recipe search and shopping fixes.",
+    "physicalQA": "Pending on iPhone."
   },
   "commonBundleManifestSHA256": "68c5e062a866a61e0a503a2a020a8eac2f265ae5bc2fa2aae0254a6950e3687e"
 }
