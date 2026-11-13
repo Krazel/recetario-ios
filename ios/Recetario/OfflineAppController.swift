@@ -87,10 +87,8 @@ import AVFoundation
         let height = webView.bounds.height
         guard publishedViewport?.height != height || publishedViewport?.keyboardVisible != keyboardVisible else { return }
         publishedViewport = (height, keyboardVisible)
-        webView.callAsyncJavaScript(
-            "window.__recetarioIOSViewport = {height, keyboardVisible}; window.dispatchEvent(new Event('recetario-ios-viewport'));",
-            arguments: ["height": Double(height), "keyboardVisible": keyboardVisible], in: nil, contentWorld: .page
-        ) { _ in }
+        let state = "{height: \(Double(height)), keyboardVisible: \(keyboardVisible)}"
+        webView.evaluateJavaScript("window.__recetarioIOSViewport = \(state); window.dispatchEvent(new Event('recetario-ios-viewport'));")
     }
     private func loadApp() {
         importReady = false
