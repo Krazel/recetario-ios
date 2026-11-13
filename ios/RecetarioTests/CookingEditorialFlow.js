@@ -174,26 +174,98 @@
   check(getComputedStyle(grid).gridTemplateColumns.split(' ').length===2, 'El móvil no muestra dos columnas');
   const search=select('.library-toolbar input[type=search]');
   const nav=select('.bottom-nav');
+  const viewport=window.visualViewport;
+  const initial={height:viewport.height,offsetTop:viewport.offsetTop,scale:viewport.scale};
   const bottom=nav.getBoundingClientRect().bottom;
-  for(let cycle=0;cycle<2;cycle++){
-   search.focus();
-   await wait(()=>document.activeElement===search,'La búsqueda no obtuvo foco');
-   search.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-   await wait(()=>document.activeElement!==search&&!document.documentElement.classList.contains('keyboard-open'), 'La búsqueda conserva el foco o el estado del teclado');
-   check(Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1, 'Cambió el anclaje del menú inferior');
+  const scroll=window.scrollY;
+  let visual=initial;
+  // The hook listens to the real object. Override its measurements during each
+  // cycle to reproduce an offset that persists after focusout on mobile WebKit.
+  const descriptors=Object.keys(initial).map(key=>[key,Object.getOwnPropertyDescriptor(viewport,key)]);
+  for(const key of Object.keys(initial))Object.defineProperty(viewport,key,{configurable:true,get:()=>visual[key]});
+  const move=(height,offsetTop)=>{visual={...initial,height,offsetTop};viewport.dispatchEvent(new Event('resize'));viewport.dispatchEvent(new Event('scroll'));};
+  try{
+   for(const key of ['Enter','Escape','blur']){
+    search.focus({preventScroll:true});
+    await wait(()=>document.activeElement===search,'La búsqueda no obtuvo foco');
+    move(initial.height-240,36);
+    await wait(()=>getComputedStyle(nav).visibility==='hidden','La barra no se ocultó con el teclado');
+    if(key==='blur')search.blur();else search.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
+    await wait(()=>document.activeElement!==search,'La búsqueda conserva el foco');
+    check(getComputedStyle(nav).visibility==='hidden','La barra reapareció durante el cierre del teclado');
+    move(initial.height-26,52);
+    await wait(()=>getComputedStyle(nav).visibility==='visible'&&Math.abs(nav.getBoundingClientRect().bottom-bottom-26)<=1,'La barra no sigue el borde visible con offset residual');
+    move(initial.height,initial.offsetTop);
+    await wait(()=>Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1,'Cambió el anclaje del menú inferior');
+    check(window.scrollY===scroll,'Cerrar búsqueda desplazó la lista');
+   }
+  }finally{
+   for(const [key,descriptor] of descriptors){if(descriptor)Object.defineProperty(viewport,key,descriptor);else delete viewport[key];}
+   viewport.dispatchEvent(new Event('resize'));
   }
-  return {columns:2,searchFocusCycles:2,softKeyboardVerified:false};
+  return {columns:2,searchFocusCycles:3,residualOffset:52,navBottomBefore:bottom,navBottomAfter:nav.getBoundingClientRect().bottom,softKeyboardVerified:false};
  }
  if (stage === 'shopping') {
   const {bookId}=window.__cookingFixture;
   const saved=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
-  const ingredients=[['Leche',1,'L','Lácteos y huevos'],['Huevos',4,'ud','Lácteos y huevos'],['Tomates',2,'ud','Fruta y verdura']];
-  await post({action:'kitchen',bookId,revision:saved.kitchen.revision,kitchen:{...saved.kitchen,shopping:ingredients.map(([name,quantity,unit,category])=>({id:crypto.randomUUID(),name,quantity,unit,category,sources:['Añadido a mano'],checked:false}))}});
+  const canvas=document.createElement('canvas');canvas.width=48;canvas.height=48;
+  const context=canvas.getContext('2d');context.fillStyle='#e9c696';context.fillRect(0,0,48,48);
+  context.fillStyle='#a4532a';context.beginPath();context.ellipse(24,25,17,12,-.32,0,Math.PI*2);context.fill();
+  context.strokeStyle='#f7dfb6';context.lineWidth=2;
+  for(const x of [19,25,31]){context.beginPath();context.moveTo(x-3,20);context.lineTo(x+1,26);context.stroke();}
+  const ownPhoto=canvas.toDataURL('image/png');
+  const ingredients=[
+   ['Tomates','Fruta y verdura','/images/products/product_tomato.png'],['Salmón','Carne y pescado','/images/products/product_fish.png'],
+   ['Leche','Lácteos y huevos','/images/products/product_milk.png'],['Esponjas','Hogar y cuidado','/images/products/product_sponge.png'],
+   ['Botiquín','Hogar y cuidado','/images/products/product_medicine.png'],['Pan propio','Panadería',ownPhoto],['Huevos','Lácteos y huevos','/images/products/product_eggs.png'],
+  ];
+  const shopping=ingredients.map(([name,category,image])=>({id:crypto.randomUUID(),name,quantity:1,unit:'ud',category,image,sources:['Añadido a mano'],checked:name==='Huevos'}));
+  const extras=saved.kitchen.extras??{lists:[],favorites:[],products:[]};
+  const fixtureList={id:'demo-20261113',name:'Compra de muestra',color:'sage',archived:false,items:shopping.map(item=>({...item,habitual:true}))};
+  await post({action:'kitchen',bookId,revision:saved.kitchen.revision,kitchen:{...saved.kitchen,shopping,extras:{...extras,lists:[fixtureList,...extras.lists.filter(list=>list.id!==fixtureList.id)]}}});
   window.dispatchEvent(new Event('focus'));
   await tap('.bottom-nav button:nth-child(3)');
   const buy=await wait(()=>select('.cesta-page:has(.cesta-item)'), 'No se abrió la compra con productos');
   check(!buy.querySelector('.cesta-heading')&&buy.querySelectorAll('.cesta-nav button').length===3, 'Cabecera de compra incorrecta');
-  return {products:buy.querySelectorAll('.cesta-item').length};
+  const names=()=>[...buy.querySelectorAll('.cesta-item strong')].map(item=>item.textContent);
+  const headings=()=>buy.querySelectorAll('.cesta-group h3').length;
+  const toggle=()=>buy.querySelector('.cesta-group-toggle');
+  const setQuery=value=>{
+   const input=buy.querySelector('.cesta-search input');
+   Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,value);
+   input.dispatchEvent(new Event('input',{bubbles:true}));
+  };
+  check(names().length===6&&!headings()&&toggle().textContent==='Todos juntos','Lista plana inicial incorrecta');
+  await wait(()=>buy.querySelector('.cesta-item img')?.getAttribute('src')===ownPhoto,'Se perdió la foto propia');
+  check(!buy.querySelector('.cesta-item img[src*="/images/products/"]'),'Se mostró arte antiguo');
+  const modes={en:['All together','By aisle'],es:['Todos juntos','Por pasillo'],ca:['Tots junts','Per passadís'],de:['Alles zusammen','Nach Gang'],fr:['Tous ensemble','Par rayon'],it:['Tutti insieme','Per corsia'],pt:['Todos juntos','Por corredor']};
+  toggle().click();
+  await wait(()=>headings()===5&&toggle().textContent==='Por pasillo','No se agrupa con un toque');
+  setQuery('Tom');
+  await wait(()=>names().join()==='Tomates','Búsqueda de compra incorrecta');
+  toggle().click();
+  await wait(()=>!headings()&&names().join()==='Tomates','Cambiar a plano perdió la búsqueda');
+  setQuery('');
+  await wait(()=>names().length===6,'No recuperó los pendientes');
+  buy.querySelector('.cesta-filters .segmented button:nth-child(2)').click();
+  await wait(()=>names().join()==='Huevos'&&buy.querySelector('.cesta-item input').checked,'Se perdió la marca de comprado');
+  toggle().click();
+  await wait(()=>headings()===1&&names().join()==='Huevos','Agrupar cambió los comprados');
+  toggle().click();
+  buy.querySelector('.cesta-filters .segmented button:first-child').click();
+  await wait(()=>!headings()&&names().length===6,'No recuperó la lista plana');
+  const stored=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
+  check(stored.kitchen.shopping.every((item,i)=>item.image===shopping[i].image&&item.checked===shopping[i].checked),'La vista cambió los datos guardados');
+  for(const [locale,[flat,aisle]] of Object.entries(modes)){
+   await window.__recetarioLanguage.set(locale);
+   await wait(()=>toggle().textContent===flat&&toggle().getAttribute('aria-pressed')==='false','Modo plano sin traducir: '+locale);
+   toggle().click();
+   await wait(()=>toggle().textContent===aisle&&toggle().getAttribute('aria-pressed')==='true','Modo agrupado sin traducir: '+locale);
+   toggle().click();
+   await wait(()=>toggle().getAttribute('aria-pressed')==='false','El botón no recuperó su estado');
+  }
+  await window.__recetarioLanguage.set('es');
+  return {products:names().length,purchased:1,aisles:5,searchPreserved:true,ownPhotoPreserved:true,oldReferencesPreserved:true,languages:Object.keys(modes)};
  }
  if (stage === 'profile') {
   await tap('.bottom-nav button:last-child');
