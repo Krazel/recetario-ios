@@ -2,21 +2,21 @@
   "appId": "6824557637",
   "bundleId": "com.krazel.recetario",
   "teamId": "B2X6D3A9J9",
-  "marketingVersion": "0.6.2",
+  "marketingVersion": "0.7",
   "buildNumber": "1",
   "lastKnownTestFlight": {
-    "version": "0.6.1",
+    "version": "0.6.2",
     "build": "1",
     "audience": "internal",
     "date": "2026-11-13",
     "state": "IN_BETA_TESTING",
-    "buildId": "5c3feaa3-591b-4008-aaf1-9b159aa080a6",
-    "run": "43345480831"
+    "buildId": "11db1e64-f2e2-4054-90c3-e1a5cd2e6d49",
+    "run": "43349685946"
   },
   "distributionAuthorization": {
-    "date": "2026-11-13",
-    "scope": "Internal TestFlight retest for the reported recipe search keyboard dismissal issue.",
+    "date": "2026-11-14",
+    "scope": "User requested internal TestFlight for the multi-list shopping home and Cesta catalog icons.",
     "physicalQA": "Pending on iPhone."
   },
-  "commonBundleManifestSHA256": "296fdb890da3230d1102596504b1360d7e928f5fa0df520aa831158f67244ad6"
+  "commonBundleManifestSHA256": "d55d14c8f45de83b92822a2b7d4c5caf5e46413ab30dddf8939afbca0fddff43"
 }

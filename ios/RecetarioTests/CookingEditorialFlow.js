@@ -228,6 +228,22 @@
   await wait(()=>Math.abs(nav.getBoundingClientRect().bottom-bottom)<=1,'La barra no volvió a su posición original');
   return {columns:2,searchFocusCycles:4,residualOffset:52,nativeResidualHeight:26,navBottomBefore:bottom,navBottomAfter:nav.getBoundingClientRect().bottom,softKeyboardVerified:false};
  }
+ if(stage==='shopping-empty'){
+  const created=await post({action:'create-book',name:'Recetario vacío · QA'});
+  const bookId=created.bookId;
+  check(!!bookId,'La creación no devolvió el nuevo recetario');
+  window.dispatchEvent(new Event('recetario-local-restored'));
+  const picker=await wait(()=>[...document.querySelectorAll('.workspace select')].find(select=>[...select.options].some(option=>option.value===bookId)),'No apareció el espacio aislado');
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(picker,bookId);
+  picker.dispatchEvent(new Event('change',{bubbles:true}));
+  await tap('.bottom-nav button:nth-child(3)');
+  await tap('.cesta-home-card:first-child');
+  await wait(()=>select('.cesta-empty')&&select('.cesta-purchase-meta [role=status]')?.textContent.includes('0 de 0'),'No apareció el estado vacío');
+  const snapshot=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
+  check(snapshot.kitchen.shopping.length===0&&snapshot.kitchen.extras.lists.length===0,'El espacio no estaba vacío');
+  check(!select('.cesta-finish,.cesta-item,.cesta-bought')&&!!select('.cesta-quick button:not(:disabled)'),'Controles incorrectos para una lista vacía');
+  return {isolatedBook:true,products:0,purchased:0,canAdd:true,canFinish:false};
+ }
  if (stage === 'shopping') {
   const bookId=window.__cookingFixture?.bookId??(await post({action:'bootstrap'})).books[0].id;
   const saved=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
@@ -248,37 +264,65 @@
   await post({action:'kitchen',bookId,revision:saved.kitchen.revision,kitchen:{...saved.kitchen,shopping,extras:{...extras,lists:[fixtureList,...extras.lists.filter(list=>list.id!==fixtureList.id)]}}});
   window.dispatchEvent(new Event('focus'));
   await tap('.bottom-nav button:nth-child(3)');
+  await tap('.cesta-home-card:first-child');
   const buy=await wait(()=>select('.cesta-page:has(.cesta-item)'), 'No se abrió la compra con productos');
   check(!buy.querySelector('.cesta-heading')&&buy.querySelectorAll('.cesta-nav button').length===3, 'Cabecera de compra incorrecta');
   const names=()=>[...buy.querySelectorAll('.cesta-item strong')].map(item=>item.textContent);
   const headings=()=>buy.querySelectorAll('.cesta-group h3').length;
   const toggle=()=>buy.querySelector('.cesta-group-toggle');
-  const setQuery=value=>{
-   const input=buy.querySelector('.cesta-search input');
+  const fill=(input,value)=>{
    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,value);
    input.dispatchEvent(new Event('input',{bubbles:true}));
   };
-  check(names().length===6&&!headings()&&toggle().textContent==='Todos juntos','Lista plana inicial incorrecta');
+  const search=()=>buy.querySelector('.cesta-purchase-meta button:last-child');
+  await wait(()=>names().length===7&&!headings()&&names().at(-1)==='Huevos','Lista plana inicial incorrecta');
   await wait(()=>buy.querySelector('.cesta-item img')?.getAttribute('src')===ownPhoto,'Se perdió la foto propia');
   check(!buy.querySelector('.cesta-item img[src*="/images/products/"]'),'Se mostró arte antiguo');
   const modes={en:['All together','By aisle'],es:['Todos juntos','Por pasillo'],ca:['Tots junts','Per passadís'],de:['Alles zusammen','Nach Gang'],fr:['Tous ensemble','Par rayon'],it:['Tutti insieme','Per corsia'],pt:['Todos juntos','Por corredor']};
   toggle().click();
-  await wait(()=>headings()===5&&toggle().textContent==='Por pasillo','No se agrupa con un toque');
-  setQuery('Tom');
+  await wait(()=>headings()===5&&names().at(-1)==='Huevos','No se agrupa con un toque');
+  search().click();
+  await wait(()=>buy.querySelector('.cesta-search input'),'No se abrió la lupa');
+  fill(buy.querySelector('.cesta-search input'),'Tom');
   await wait(()=>names().join()==='Tomates','Búsqueda de compra incorrecta');
   toggle().click();
   await wait(()=>!headings()&&names().join()==='Tomates','Cambiar a plano perdió la búsqueda');
-  setQuery('');
-  await wait(()=>names().length===6,'No recuperó los pendientes');
-  buy.querySelector('.cesta-filters .segmented button:nth-child(2)').click();
-  await wait(()=>names().join()==='Huevos'&&buy.querySelector('.cesta-item input').checked,'Se perdió la marca de comprado');
-  toggle().click();
-  await wait(()=>headings()===1&&names().join()==='Huevos','Agrupar cambió los comprados');
-  toggle().click();
-  buy.querySelector('.cesta-filters .segmented button:first-child').click();
-  await wait(()=>!headings()&&names().length===6,'No recuperó la lista plana');
+  search().click();
+  await wait(()=>names().length===7&&!buy.querySelector('.cesta-search input'),'No recuperó todos los productos');
+  const row=(name)=>[...buy.querySelectorAll('.cesta-item')].find(item=>item.querySelector('strong').textContent===name);
+  row('Tomates').querySelector('[role=checkbox]').click();
+  await wait(()=>buy.querySelector('.cesta-bought')?.textContent.includes('Tomates'),'Marcar desde la fila no movió el producto');
+  row('Tomates').querySelector('[role=checkbox]').click();
+  await wait(()=>row('Tomates')?.querySelector('[aria-checked=false]'),'No se desmarcó desde la fila');
+  row('Pan propio').querySelector('.cesta-row-edit').click();
+  await wait(()=>select('.cesta-dialog input[type=number]'),'Los tres puntos no abrieron edición');
+  fill(select('.cesta-dialog input[type=number]'),'2');
+  select('.cesta-dialog form').requestSubmit();
+  await wait(()=>row('Pan propio')?.querySelector('small')?.textContent.startsWith('2'),'No se guardó la cantidad');
+  const quick=()=>buy.querySelector('.cesta-quick input');
+  fill(quick(),'Tom');
+  await wait(()=>buy.querySelector('.cesta-suggestions button'),'No aparecieron sugerencias');
+  fill(quick(),'Producto rápido QA');
+  await wait(()=>quick().value==='Producto rápido QA','No se recibió el alta');
+  buy.querySelector('.cesta-quick').requestSubmit();
+  await wait(()=>row('Producto rápido QA')&&!quick().value,'No se añadió texto con el formulario');
+  for(const name of names()) {
+   const button=await wait(()=>{const control=row(name)?.querySelector('[role=checkbox]');return control&&!control.disabled&&control;},'Fila sin editar');
+   if(button.getAttribute('aria-checked')==='false'){
+    button.click();
+    await wait(()=>row(name)?.querySelector('[aria-checked=true]'),'No se guardó la marca');
+   }
+  }
+  await wait(()=>buy.querySelector('.cesta-finish'),'No apareció Terminar compra');
+  buy.querySelector('.cesta-finish').click();
+  await wait(()=>!buy.querySelector('.cesta-bought')&&names().length===8,'Terminar perdió productos o marcas');
+  buy.querySelector('.cesta-quick').requestSubmit();
+  await wait(()=>buy.querySelector('.cesta-catalog'),'El + vacío no abrió el catálogo');
+  buy.querySelector('.cesta-nav button').click();
+  await tap('.cesta-home-card:first-child');
+  await wait(()=>names().length===8,'No volvió a Mi compra');
   const stored=await (await fetch('/api/recetario?book='+encodeURIComponent(bookId))).json();
-  check(stored.kitchen.shopping.every((item,i)=>item.image===shopping[i].image&&item.checked===shopping[i].checked),'La vista cambió los datos guardados');
+  check(shopping.every(original=>stored.kitchen.shopping.some(item=>item.id===original.id&&item.image===original.image&&!item.checked)),'La vista cambió los datos guardados');
   for(const [locale,[flat,aisle]] of Object.entries(modes)){
    await window.__recetarioLanguage.set(locale);
    await wait(()=>toggle().textContent===flat&&toggle().getAttribute('aria-pressed')==='false','Modo plano sin traducir: '+locale);
@@ -288,7 +332,7 @@
    await wait(()=>toggle().getAttribute('aria-pressed')==='false','El botón no recuperó su estado');
   }
   await window.__recetarioLanguage.set('es');
-  return {products:names().length,purchased:1,aisles:5,searchPreserved:true,ownPhotoPreserved:true,oldReferencesPreserved:true,languages:Object.keys(modes)};
+  return {products:names().length,finishPreserved:true,editedQuantity:2,quickAdded:true,aisles:5,searchPreserved:true,ownPhotoPreserved:true,oldReferencesPreserved:true,languages:Object.keys(modes)};
  }
  if (stage === 'profile') {
   await tap('.bottom-nav button:last-child');
